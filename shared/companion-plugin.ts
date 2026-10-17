@@ -1,36 +1,71 @@
-import streamDeck, { action, type KeyDownEvent } from "@elgato/streamdeck";
+import streamDeck, { action, type KeyDownEvent, type KeyUpEvent, type WillDisappearEvent } from "@elgato/streamdeck";
 import { DailyAction, REGISTRY, globals, type Appearance } from "./base.js";
-import { PRESET_ICONS } from "./icons.js";
+import { PRESET_ICONS, setAppDesign } from "./icons.js";
 import { connectCompanion, type CompanionConnection } from "./companion-routing.js";
 import { controlApp } from "./app-control.js";
 import { shortcutToSendKeys } from "./shortcuts.js";
 import type { AppSelector } from "./companion-specs.js";
-export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; operation?: "back" | "focus" };
-export type CompanionConfig = { uuid: string; name: string; profile: string; selector: AppSelector; commands: CompanionCommand[] };
-type KeySettings = Appearance & { shortcut?: string };
+import { TradingInput } from "./trading-input.js";
+import { ps } from "./ps.js";
+export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; operation?: "back" | "focus" | "url" | "page"; url?: string; page?: number; trading?: "submit" | "bracket" | "panel"; setup?: string; executionNote?: string; hidden?: boolean; holdMs?: number; requiresBinding?: boolean };
+export type CompanionConfig = { uuid: string; name: string; profile: string; selector: AppSelector; commands: CompanionCommand[]; design?: Record<string, unknown> };
+type KeySettings = Appearance & { shortcut?: string; destination?: string };
 
 export async function bootCompanion(config: CompanionConfig): Promise<void> {
+	setAppDesign(config.design);
 	streamDeck.logger.setLevel("info");
 	const log = streamDeck.logger.createScope("companion");
+	const trading = new TradingInput(config.selector);
+	if (config.commands.some(c => c.trading)) trading.warm();
 	let bridge: CompanionConnection | undefined;
 	const visible = new Map<string, number>();
-	const localShow = async (device: string) => { await streamDeck.profiles.switchToProfile(device, config.profile); };
+	const localShow = async (device: string) => { await streamDeck.profiles.switchToProfile(device, config.profile, 0); };
 	const localBack = async (device: string) => { await streamDeck.profiles.switchToProfile(device); };
 	const show = async (device: string) => { if (bridge?.connected) await bridge.request("show", device); else await localShow(device); };
 	const back = async (device: string) => { if (bridge?.connected) await bridge.request("back", device); else await localBack(device); };
 	for (const definition of config.commands) {
-		PRESET_ICONS["comp-" + definition.id] = { glyph: definition.glyph, theme: definition.theme, label: definition.name, style: "vivid" };
+		PRESET_ICONS["comp-" + definition.id] = { glyph: definition.glyph, theme: definition.theme, label: definition.name, style: config.design ? "app" : "vivid" };
 		@action({ UUID: config.uuid + "." + definition.id })
 		class AppKey extends DailyAction<KeySettings> {
 			protected readonly kind = "comp-" + definition.id;
+			#held = new Set<string>();
+			#pending = new Map<string, ReturnType<typeof setTimeout>>();
+			#release(id: string): void { this.#held.delete(id); clearTimeout(this.#pending.get(id)); this.#pending.delete(id); }
+			override onWillDisappear(ev: WillDisappearEvent<KeySettings>): void { this.#release(ev.action.id); super.onWillDisappear(ev); }
+			override async onKeyUp(ev: KeyUpEvent<KeySettings>): Promise<void> { this.#release(ev.action.id); }
+			protected override dynamicLabel(settings: KeySettings): string | undefined {
+				return ((definition.trading === "submit" || definition.requiresBinding) && !settings.shortcut?.trim()) || (definition.operation === "url" && !definition.url && !settings.destination?.trim()) ? definition.name + " · SETUP" : undefined;
+			}
 			override async onKeyDown(ev: KeyDownEvent<KeySettings>): Promise<void> {
 				try {
 					if (definition.operation === "back") { await back(ev.action.device.id); return; }
+					if (definition.operation === "page") { await streamDeck.profiles.switchToProfile(ev.action.device.id, config.profile, definition.page || 0); return; }
+					if (definition.operation === "url") {
+						const url = ev.payload.settings.destination?.trim() || definition.url;
+						if (!url || !/^https?:\/\//i.test(url)) { await this.feedback(ev.action, {status:"miss", message:"Enter the full http:// or https:// page URL"}); return; }
+						await this.feedback(ev.action, await ps.run("url", [url]), false); return;
+					}
+					if (definition.trading) {
+						if (this.#held.has(ev.action.id)) return;
+						this.#held.add(ev.action.id);
+						const binding = ev.payload.settings.shortcut?.trim();
+						if (binding) {
+							if (definition.holdMs) {
+								this.#pending.set(ev.action.id, setTimeout(async () => {
+									this.#pending.delete(ev.action.id);
+									if (!this.#held.has(ev.action.id)) return;
+									try { const current = await ev.action.getSettings(); if (!this.#held.has(ev.action.id) || current.shortcut?.trim() !== binding) return; await this.feedback(ev.action, await trading.send(binding), false); } catch { await this.feedback(ev.action, {status:"err",message:"Trading action unavailable"}); }
+								}, definition.holdMs)); return;
+							}
+							await this.feedback(ev.action, await trading.send(binding), false); return;
+						}
+						if (definition.trading === "submit" || definition.requiresBinding) { await this.feedback(ev.action, { status: "miss", message: "Match this key to a supported action in your broker settings" }); return; }
+					}
 					const shortcut = ev.payload.settings.shortcut?.trim() || definition.shortcut;
 					const keys = shortcut ? shortcutToSendKeys(shortcut) : undefined;
 					if (shortcut && !keys) { await this.feedback(ev.action, { status: "miss", message: "Use a shortcut such as Ctrl+Shift+N" }); return; }
 					if (!keys && !definition.menu && definition.operation !== "focus") { await this.feedback(ev.action, { status: "miss", message: "Set this key's shortcut in settings" }); return; }
-					const result = await controlApp({ selector: config.selector, ...(keys ? { keys, chords: shortcut!.split(/\s+/).map((chord) => shortcutToSendKeys(chord)!) } : definition.menu ? { menu: definition.menu } : {}) });
+					const result = await controlApp({ selector: config.selector, ...(keys ? { keys, chords: shortcut!.split(/\s+/).map((chord) => shortcutToSendKeys(chord)!) } : definition.menu ? { menu: definition.menu, choices: definition.choices } : {}) });
 					await this.feedback(ev.action, result, false);
 				} catch { await this.feedback(ev.action, { status: "err", message: "App controls are unavailable" }); }
 			}

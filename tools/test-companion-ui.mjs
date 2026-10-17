@@ -14,13 +14,18 @@ try{
  const command=config.commands.find(c=>c.shortcut);await open(command);
  assert.match(await page.locator('#companionTitle').textContent(),new RegExp(config.app.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
  assert.equal(await page.locator('#animate').isChecked(),true);
+ assert.equal(await page.locator('#preview [data-app-design]').count(),1);
+ assert.equal(await page.locator('#themes').isVisible(),false);
  for(const style of ['neon','vivid','pro']){await page.locator(`#styleSeg [data-style="${style}"]`).click();await page.waitForFunction(style=>window.saved.at(-1)?.iconStyle===style,style);}
  for(const theme of ['sunset','electric','tropical']){await page.locator(`[data-theme="${theme}"]`).click();await page.waitForFunction(theme=>window.saved.at(-1)?.iconTheme===theme,theme);}
  await page.locator('#companionShortcut').fill('Ctrl+Shift+X');await page.waitForFunction(()=>window.saved.at(-1)?.shortcut==='Ctrl+Shift+X');
  await page.locator('#animate').uncheck();await page.waitForFunction(()=>window.saved.at(-1)?.animate===false);assert.equal(await page.locator('#preview rect[stroke-dashoffset]').count(),0);
  await page.locator('#animate').check();await page.waitForFunction(()=>window.saved.at(-1)?.animate===true);
  await page.locator('#companionShow').click();await page.waitForFunction(()=>window.events.includes('companionShow'));
+ await page.locator('#styleApp').click();await page.waitForFunction(()=>window.saved.at(-1)?.iconStyle==='app');
  mkdirSync('docs/images',{recursive:true});await page.screenshot({path:'docs/images/settings.png',fullPage:true});
+ const url=config.commands.find(c=>c.operation==='url');
+ if(url){await open(url);assert.equal(await page.locator('#companionShortcutRow').isVisible(),false);assert.equal(await page.locator('#companionDestinationRow').isVisible(),true);await page.locator('#companionDestination').fill('https://example.com/personal-page');await page.locator('#companionDestination').blur();await page.waitForFunction(()=>window.saved.at(-1)?.destination==='https://example.com/personal-page');}
  await open(config.commands[0]);assert.equal(await page.locator('#companionBack').isVisible(),true);await page.locator('#companionFollow').uncheck();await page.waitForFunction(()=>window.globalSaved.at(-1)?.autoFollow===false);
  await page.locator('#companionBack').click();await page.waitForFunction(()=>window.events.includes('companionBack'));
  assert.deepEqual(errors,[]);console.log('PASS inspector: styles, colours, animation, custom shortcut, navigation, follow-focus and no browser errors');

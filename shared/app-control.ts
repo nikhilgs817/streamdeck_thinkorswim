@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { appendFileSync } from "node:fs";
 import type { AppSelector } from "./companion-specs.js";
 import type { PsResult } from "./ps.js";
-export type AppControl = { selector: AppSelector; keys?: string; chords?: string[]; menu?: string[][] };
+export type AppControl = { selector: AppSelector; keys?: string; chords?: string[]; menu?: string[][]; choices?: { names: string[]; options: string[] }[] };
 /** Separate worker bounds slow accessibility providers and verifies the foreground app before input. */
 export const APP_CONTROL_SCRIPT = String.raw`
 $ErrorActionPreference='Stop'
@@ -58,6 +58,21 @@ try{
    elseif($element.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)){$pattern.Select()}
    Start-Sleep -Milliseconds 180
   }
+ }
+ foreach($choice in @($data.choices)){
+  if(-not $choice){continue}
+  Confirm-Target
+  $root=[System.Windows.Automation.AutomationElement]::FromHandle([ToolkitAppWindow]::GetForegroundWindow())
+  $combos=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ComboBox)) | Where-Object {$_.Current.IsEnabled -and -not $_.Current.IsOffscreen -and $_.Current.ProcessId -eq $chosen.Id -and ($choice.names -contains $_.Current.Name -or ($_.Current.LabeledBy -and $choice.names -contains $_.Current.LabeledBy.Current.Name))})
+  if($combos.Count -ne 1){throw 'The order template selector is not uniquely available. Open the bracket in the app or configure a bracket-opening hotkey.'}
+  $expand=$null
+  if(-not $combos[0].TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$expand)){throw 'The app does not expose this template selector'}
+  Confirm-Target;$expand.Expand();Start-Sleep -Milliseconds 120
+  $options=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition) | Where-Object {$choice.options -contains $_.Current.Name -and $_.Current.IsEnabled -and -not $_.Current.IsOffscreen -and $_.Current.ProcessId -eq $chosen.Id})
+  $selectable=@($options | Where-Object {$p=$null;$_.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$p)})
+  if($selectable.Count -ne 1){throw 'The requested bracket template is not uniquely available'}
+  $selection=$null;$null=$selectable[0].TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$selection)
+  Confirm-Target;$selection.Select()
  }
  @{status='ok';message='Control sent'} | ConvertTo-Json -Compress
 }catch{@{status='miss';message=$_.Exception.Message} | ConvertTo-Json -Compress}

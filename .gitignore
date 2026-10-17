@@ -22,3 +22,6 @@ tools/*
 !tools/test-companion-ui.mjs
 !tools/verify-app-control.ps1
 !tools/render-preview.mjs
+!tools/render-app-preview.mjs
+!tools/test-workflows.mjs
+!tools/test-trading-input.mjs

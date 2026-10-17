@@ -16,6 +16,169 @@
       "operation": "back"
     },
     {
+      "id": "buy",
+      "name": "Buy",
+      "glyph": "tradebuy",
+      "theme": "emerald",
+      "trading": "submit",
+      "description": "Send your configured immediate Buy hotkey once, using the symbol, account, quantity and order defaults in the trading app.",
+      "setup": "In Setup > Application Settings > Hot keys > Active Trader, assign the Buy action. Match that hotkey here and verify its immediate-submit behavior in paperMoney. The app controls quantity, template and Auto Send."
+    },
+    {
+      "id": "sell",
+      "name": "Sell",
+      "glyph": "tradesell",
+      "theme": "crimson",
+      "trading": "submit",
+      "description": "Send your configured immediate Sell hotkey once, using the current trading app defaults.",
+      "setup": "Assign the Sell action in Active Trader hot-key settings, then enter exactly that hotkey here. The app controls quantity and Auto Send."
+    },
+    {
+      "id": "otoco",
+      "name": "OTOCO",
+      "glyph": "tradebracket",
+      "theme": "cosmic",
+      "trading": "bracket",
+      "description": "Open the editable entry, profit-target and stop-loss bracket. This button does not send the order.",
+      "menu": [
+        [
+          "Trade"
+        ],
+        [
+          "Active Trader"
+        ]
+      ],
+      "choices": [
+        {
+          "names": [
+            "Template"
+          ],
+          "options": [
+            "TRG w/bracket",
+            "TRG w/ bracket",
+            "Trigger with bracket"
+          ]
+        }
+      ],
+      "setup": "This Java app does not expose its bracket picker to Windows accessibility on this PC. Configure an editor-opening hotkey only if supported. Otherwise select Active Trader > Template > TRG w/bracket in the app. This key never guesses a click or submits an order.",
+      "requiresBinding": true
+    },
+    {
+      "id": "positions",
+      "name": "Positions",
+      "glyph": "briefcase",
+      "theme": "ocean",
+      "trading": "panel",
+      "description": "Show open positions in the app, including position size and profit/loss.",
+      "setup": "Uses the General hot-key binding. Change the override if you customized it. Positions and working orders share Monitor > Activity and Positions.",
+      "shortcut": "Ctrl+1"
+    },
+    {
+      "id": "orders",
+      "name": "Orders",
+      "glyph": "tradeorders",
+      "theme": "gold",
+      "trading": "panel",
+      "description": "Show working orders and fills.",
+      "setup": "Uses the General hot-key binding. Change the override if you customized it. Positions and working orders share Monitor > Activity and Positions.",
+      "shortcut": "Ctrl+1"
+    },
+    {
+      "id": "activetrader",
+      "name": "Trade",
+      "glyph": "candles",
+      "theme": "mint",
+      "trading": "panel",
+      "description": "Open the Trade workspace. Select Active Trader there. Override if your General > Trade hotkey is customized.",
+      "setup": "Optional: enter a matching app hotkey for faster panel switching.",
+      "shortcut": "Ctrl+2"
+    },
+    {
+      "id": "charts",
+      "name": "Charts",
+      "glyph": "chart",
+      "theme": "azure",
+      "trading": "panel",
+      "description": "Show the chart workspace.",
+      "setup": "Uses Charts. Keep linked Daily, 5-minute and 2-minute charts visible together so the symbol stays synchronized.",
+      "shortcut": "Ctrl+6"
+    },
+    {
+      "id": "leveltwo",
+      "name": "Level 2",
+      "glyph": "candles",
+      "theme": "cyan",
+      "menu": [
+        [
+          "Trade"
+        ],
+        [
+          "Active Trader"
+        ]
+      ],
+      "trading": "panel",
+      "description": "Show the Active Trader workspace containing your depth-of-market panels.",
+      "setup": "No working universal shortcut is available for this panel. Assign a supported matching app shortcut, or open it from the app.",
+      "requiresBinding": true
+    },
+    {
+      "id": "timesales",
+      "name": "Time & Sales",
+      "glyph": "doc",
+      "theme": "violet",
+      "menu": [
+        [
+          "Trade"
+        ],
+        [
+          "Active Trader"
+        ]
+      ],
+      "trading": "panel",
+      "description": "Show the trading workspace containing Time & Sales.",
+      "setup": "No working universal shortcut is available for this panel. Assign a supported matching app shortcut, or open it from the app.",
+      "requiresBinding": true
+    },
+    {
+      "id": "watchlist",
+      "name": "Watchlist",
+      "glyph": "doc",
+      "theme": "gold",
+      "description": "Assign your Watchlist shortcut from the app hot-key settings.",
+      "trading": "panel",
+      "menu": [
+        [
+          "Watchlist",
+          "WatchList"
+        ]
+      ],
+      "requiresBinding": true,
+      "setup": "No working universal shortcut is available for this panel. Assign a supported matching app shortcut, or open it from the app."
+    },
+    {
+      "id": "hotkeys",
+      "name": "Hot-key setup",
+      "glyph": "keyboard",
+      "theme": "electric",
+      "menu": [
+        [
+          "Setup"
+        ],
+        [
+          "Application Settings...",
+          "Application Settings"
+        ],
+        [
+          "Hot keys",
+          "Hot Keys"
+        ]
+      ],
+      "trading": "panel",
+      "description": "Open the app hot-key settings to configure your trading actions.",
+      "setup": "No working universal shortcut is available for this panel. Assign a supported matching app shortcut, or open it from the app.",
+      "requiresBinding": true
+    },
+    {
       "id": "focus",
       "name": "Focus app",
       "glyph": "target",
@@ -29,7 +192,8 @@
       "glyph": "gear",
       "theme": "mint",
       "shortcut": "Ctrl+S",
-      "description": "Open chart settings with a chart selected. Match your app shortcut if customized."
+      "description": "Open chart settings with a chart selected. Match your app shortcut if customized.",
+      "hidden": false
     },
     {
       "id": "timeframe",
@@ -37,7 +201,8 @@
       "glyph": "calendar",
       "theme": "ocean",
       "shortcut": "Ctrl+T",
-      "description": "Open chart time-frame setup with a chart selected."
+      "description": "Open chart time-frame setup with a chart selected.",
+      "hidden": false
     },
     {
       "id": "zoomin",
@@ -45,7 +210,8 @@
       "glyph": "search",
       "theme": "tropical",
       "shortcut": "Ctrl+Plus",
-      "description": "Zoom the focused chart in."
+      "description": "Zoom the focused chart in.",
+      "hidden": false
     },
     {
       "id": "zoomout",
@@ -53,7 +219,8 @@
       "glyph": "search",
       "theme": "sky",
       "shortcut": "Ctrl+-",
-      "description": "Zoom the focused chart out."
+      "description": "Zoom the focused chart out.",
+      "hidden": false
     },
     {
       "id": "copy",
@@ -61,7 +228,8 @@
       "glyph": "copy",
       "theme": "violet",
       "shortcut": "Ctrl+C",
-      "description": "Copy in the app. An optional custom shortcut can replace the default."
+      "description": "Copy in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "paste",
@@ -69,7 +237,8 @@
       "glyph": "paste",
       "theme": "crimson",
       "shortcut": "Ctrl+V",
-      "description": "Paste in the app. An optional custom shortcut can replace the default."
+      "description": "Paste in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "undo",
@@ -77,7 +246,8 @@
       "glyph": "back",
       "theme": "iris",
       "shortcut": "Ctrl+Z",
-      "description": "Undo in the selected editable field or editor."
+      "description": "Undo in the selected editable field or editor.",
+      "hidden": true
     },
     {
       "id": "redo",
@@ -85,7 +255,8 @@
       "glyph": "push",
       "theme": "azure",
       "shortcut": "Ctrl+Y",
-      "description": "Redo in the selected editable field or editor."
+      "description": "Redo in the selected editable field or editor.",
+      "hidden": true
     },
     {
       "id": "nextfield",
@@ -93,7 +264,8 @@
       "glyph": "push",
       "theme": "azure",
       "shortcut": "Tab",
-      "description": "Next field in the app. An optional custom shortcut can replace the default."
+      "description": "Next field in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "previousfield",
@@ -101,7 +273,8 @@
       "glyph": "pull",
       "theme": "iris",
       "shortcut": "Shift+Tab",
-      "description": "Previous field in the app. An optional custom shortcut can replace the default."
+      "description": "Previous field in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "escape",
@@ -109,7 +282,8 @@
       "glyph": "closewin",
       "theme": "slate",
       "shortcut": "Escape",
-      "description": "Dismiss a menu or dialog. Does not submit a form."
+      "description": "Dismiss a menu or dialog. Does not submit a form.",
+      "hidden": false
     },
     {
       "id": "pageup",
@@ -117,7 +291,8 @@
       "glyph": "pull",
       "theme": "indigo",
       "shortcut": "PageUp",
-      "description": "Page up in the app. An optional custom shortcut can replace the default."
+      "description": "Page up in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "pagedown",
@@ -125,33 +300,133 @@
       "glyph": "push",
       "theme": "royal",
       "shortcut": "PageDown",
-      "description": "Page down in the app. An optional custom shortcut can replace the default."
-    },
-    {
-      "id": "charts",
-      "name": "Charts shortcut",
-      "glyph": "chart",
-      "theme": "mint",
-      "description": "Assign the Charts shortcut from thinkorswim Setup > Application Settings > Hot keys."
-    },
-    {
-      "id": "watchlist",
-      "name": "Watchlist shortcut",
-      "glyph": "doc",
-      "theme": "gold",
-      "description": "Assign your Watchlist shortcut from the app hot-key settings."
+      "description": "Page down in the app. An optional custom shortcut can replace the default.",
+      "hidden": true
     },
     {
       "id": "shortcut",
       "name": "Custom shortcut",
       "glyph": "keyboard",
       "theme": "electric",
-      "description": "Set your own app shortcut, for example Ctrl+Shift+N."
+      "description": "Set your own app shortcut, for example Ctrl+Shift+N.",
+      "hidden": false
+    },
+    {
+      "id": "tradepage",
+      "name": "Trade",
+      "glyph": "grid",
+      "theme": "mint",
+      "description": "Show the Trade Stream Deck page.",
+      "operation": "page",
+      "page": 0
+    },
+    {
+      "id": "planpage",
+      "name": "Plan / Scan",
+      "glyph": "grid",
+      "theme": "mint",
+      "description": "Show the Plan / Scan Stream Deck page.",
+      "operation": "page",
+      "page": 1
+    },
+    {
+      "id": "managepage",
+      "name": "Manage",
+      "glyph": "grid",
+      "theme": "mint",
+      "description": "Show the Manage Stream Deck page.",
+      "operation": "page",
+      "page": 2
+    },
+    {
+      "id": "riskcheck",
+      "name": "Risk check",
+      "glyph": "target",
+      "theme": "mint",
+      "description": "Open your risk and position-sizing page. Configure its full URL.",
+      "operation": "url"
+    },
+    {
+      "id": "tradeplan",
+      "name": "Trade plan",
+      "glyph": "doc",
+      "theme": "mint",
+      "description": "Open your trade plan: daily trend, setup, entry, invalidation, target and size. Configure its full URL.",
+      "operation": "url"
+    },
+    {
+      "id": "journal",
+      "name": "Journal",
+      "glyph": "doc",
+      "theme": "mint",
+      "description": "Open your trading journal to record the setup, execution and outcome. Configure its full URL.",
+      "operation": "url"
+    },
+    {
+      "id": "partial",
+      "name": "Trim 1/3",
+      "glyph": "tradesell",
+      "theme": "mint",
+      "description": "Send your configured partial-exit hotkey. The broker must calculate one third of the current position and preserve or resize remaining protection.",
+      "trading": "submit",
+      "requiresBinding": true,
+      "setup": "Requires a supported, verified broker hotkey. This action has no guessed default. If your broker does not provide it, use Positions / Orders to manage it manually."
+    },
+    {
+      "id": "breakeven",
+      "name": "Stop to B/E",
+      "glyph": "tradebracket",
+      "theme": "mint",
+      "description": "Send your configured stop-to-breakeven hotkey. The broker must derive the actual fill price and remaining quantity.",
+      "trading": "submit",
+      "requiresBinding": true,
+      "setup": "Requires a supported, verified broker hotkey. This action has no guessed default. If your broker does not provide it, use Positions / Orders to manage it manually."
+    },
+    {
+      "id": "trail",
+      "name": "Trail stop",
+      "glyph": "tradebracket",
+      "theme": "mint",
+      "description": "Open the broker stop editor or send its configured trailing-stop hotkey. Review the remaining size and 5-minute structure.",
+      "trading": "panel",
+      "requiresBinding": true,
+      "setup": "Requires a supported, verified broker hotkey. This action has no guessed default. If your broker does not provide it, use Positions / Orders to manage it manually."
+    },
+    {
+      "id": "flatten",
+      "name": "Flatten",
+      "glyph": "closewin",
+      "theme": "mint",
+      "description": "Hold for one second to send the configured close-position action once. Match its cancel/close behavior in your broker.",
+      "trading": "submit",
+      "requiresBinding": true,
+      "setup": "Requires a supported, verified broker hotkey. This action has no guessed default. If your broker does not provide it, use Positions / Orders to manage it manually.",
+      "holdMs": 1000
+    },
+    {
+      "id": "cancelall",
+      "name": "Cancel orders",
+      "glyph": "tradeorders",
+      "theme": "mint",
+      "description": "Hold for one second to send the configured cancel-orders action once. Cancelling protective orders can leave a position unprotected.",
+      "trading": "submit",
+      "requiresBinding": true,
+      "setup": "Requires a supported, verified broker hotkey. This action has no guessed default. If your broker does not provide it, use Positions / Orders to manage it manually.",
+      "holdMs": 1000
+    },
+    {
+      "id": "scan",
+      "name": "Scanner",
+      "glyph": "search",
+      "theme": "mint",
+      "description": "Open Stock Hacker / Scan for your momentum watchlist. No options or orders are selected.",
+      "shortcut": "Ctrl+4",
+      "trading": "panel"
     }
   ],
   "uuid": "com.dailyops.thinkorswim.v1",
   "name": "thinkorswim Controls",
-  "version": "1.0.0.0",
+  "version": "1.1.0.0",
   "profile": "profiles/thinkorswim",
   "selector": {
     "names": [
@@ -160,5 +435,98 @@
       "java"
     ],
     "path": "[\\\\/]thinkorswim(?:[\\\\/]|\\.exe$)"
-  }
+  },
+  "trading": true,
+  "references": [
+    "https://toslc.thinkorswim.com/center/howToTos/thinkManual/Getting-Started/Keyboard-Shortcuts",
+    "https://toslc.thinkorswim.com/center/howToTos/thinkManual/Trade/Active-Trader/AT-Entering-Orders"
+  ],
+  "layout": {
+    "0,0": "back",
+    "1,0": "buy",
+    "2,0": "sell",
+    "3,0": "otoco",
+    "4,0": "positions",
+    "0,1": "scan",
+    "1,1": "charts",
+    "2,1": "timeframe",
+    "3,1": "orders",
+    "4,1": "activetrader",
+    "0,2": "planpage",
+    "1,2": "managepage",
+    "2,2": "riskcheck",
+    "3,2": "journal",
+    "4,2": "focus"
+  },
+  "design": {
+    "id": "thinkorswim",
+    "name": "thinkorswim",
+    "background": "#151617",
+    "surface": "#242628",
+    "ink": "#d8dcdf",
+    "accent": "#4bb18b",
+    "border": "#474b4f",
+    "radius": 3
+  },
+  "pages": [
+    {
+      "name": "MOMO \u00b7 execution",
+      "layout": {
+        "0,0": "back",
+        "1,0": "buy",
+        "2,0": "sell",
+        "3,0": "otoco",
+        "4,0": "positions",
+        "0,1": "scan",
+        "1,1": "charts",
+        "2,1": "timeframe",
+        "3,1": "orders",
+        "4,1": "activetrader",
+        "0,2": "planpage",
+        "1,2": "managepage",
+        "2,2": "riskcheck",
+        "3,2": "journal",
+        "4,2": "focus"
+      }
+    },
+    {
+      "name": "PLAN \u00b7 daily / 5m / 2m",
+      "layout": {
+        "0,0": "tradepage",
+        "1,0": "scan",
+        "2,0": "charts",
+        "3,0": "timeframe",
+        "4,0": "chartsettings",
+        "0,1": "tradeplan",
+        "1,1": "riskcheck",
+        "2,1": "watchlist",
+        "3,1": "leveltwo",
+        "4,1": "timesales",
+        "0,2": "managepage",
+        "1,2": "hotkeys",
+        "2,2": "zoomin",
+        "3,2": "zoomout",
+        "4,2": "focus"
+      }
+    },
+    {
+      "name": "MANAGE \u00b7 protect / reduce",
+      "layout": {
+        "0,0": "tradepage",
+        "1,0": "positions",
+        "2,0": "orders",
+        "3,0": "otoco",
+        "4,0": "activetrader",
+        "0,1": "partial",
+        "1,1": "breakeven",
+        "2,1": "trail",
+        "3,1": "journal",
+        "4,1": "riskcheck",
+        "0,2": "planpage",
+        "1,2": "cancelall",
+        "3,2": "flatten",
+        "4,2": "focus"
+      }
+    }
+  ]
 }

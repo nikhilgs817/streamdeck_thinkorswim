@@ -1,14 +1,16 @@
 {
   "name": "streamdeck-thinkorswim",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Unofficial thinkorswim controls for Elgato Stream Deck on Windows",
   "scripts": {
     "build": "node tools/generate.mjs && rollup -c",
-    "test": "node tools/test-companion.mjs",
+    "test": "node tools/test-workflows.mjs",
     "test:ui": "node tools/test-companion-ui.mjs",
     "validate": "streamdeck validate plugins/thinkorswim/com.dailyops.thinkorswim.v1.sdPlugin",
-    "pack": "node tools/clean.mjs && streamdeck pack plugins/thinkorswim/com.dailyops.thinkorswim.v1.sdPlugin --output dist --force"
+    "pack": "node tools/clean.mjs && streamdeck pack plugins/thinkorswim/com.dailyops.thinkorswim.v1.sdPlugin --output dist --force",
+    "preview": "node tools/render-app-preview.mjs",
+    "test:input": "node tools/test-trading-input.mjs"
   },
   "keywords": [],
   "author": "Daily Ops",

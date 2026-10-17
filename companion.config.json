@@ -1,0 +1,164 @@
+{
+  "id": "thinkorswim",
+  "folder": "THINKORSWIM",
+  "repo": "streamdeck_thinkorswim",
+  "app": "thinkorswim",
+  "glyph": "candles",
+  "theme": "mint",
+  "reference": "https://toslc.thinkorswim.com/center/howToTos/thinkManual/Getting-Started/Keyboard-Shortcuts",
+  "commands": [
+    {
+      "id": "back",
+      "name": "Back",
+      "glyph": "back",
+      "theme": "gold",
+      "description": "Return to the main Stream Deck keys.",
+      "operation": "back"
+    },
+    {
+      "id": "focus",
+      "name": "Focus app",
+      "glyph": "target",
+      "theme": "ocean",
+      "description": "Bring the verified app window to the front.",
+      "operation": "focus"
+    },
+    {
+      "id": "chartsettings",
+      "name": "Chart settings",
+      "glyph": "gear",
+      "theme": "mint",
+      "shortcut": "Ctrl+S",
+      "description": "Open chart settings with a chart selected. Match your app shortcut if customized."
+    },
+    {
+      "id": "timeframe",
+      "name": "Time frame",
+      "glyph": "calendar",
+      "theme": "ocean",
+      "shortcut": "Ctrl+T",
+      "description": "Open chart time-frame setup with a chart selected."
+    },
+    {
+      "id": "zoomin",
+      "name": "Zoom in",
+      "glyph": "search",
+      "theme": "tropical",
+      "shortcut": "Ctrl+Plus",
+      "description": "Zoom the focused chart in."
+    },
+    {
+      "id": "zoomout",
+      "name": "Zoom out",
+      "glyph": "search",
+      "theme": "sky",
+      "shortcut": "Ctrl+-",
+      "description": "Zoom the focused chart out."
+    },
+    {
+      "id": "copy",
+      "name": "Copy",
+      "glyph": "copy",
+      "theme": "violet",
+      "shortcut": "Ctrl+C",
+      "description": "Copy in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "paste",
+      "name": "Paste",
+      "glyph": "paste",
+      "theme": "crimson",
+      "shortcut": "Ctrl+V",
+      "description": "Paste in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "undo",
+      "name": "Undo",
+      "glyph": "back",
+      "theme": "iris",
+      "shortcut": "Ctrl+Z",
+      "description": "Undo in the selected editable field or editor."
+    },
+    {
+      "id": "redo",
+      "name": "Redo",
+      "glyph": "push",
+      "theme": "azure",
+      "shortcut": "Ctrl+Y",
+      "description": "Redo in the selected editable field or editor."
+    },
+    {
+      "id": "nextfield",
+      "name": "Next field",
+      "glyph": "push",
+      "theme": "azure",
+      "shortcut": "Tab",
+      "description": "Next field in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "previousfield",
+      "name": "Previous field",
+      "glyph": "pull",
+      "theme": "iris",
+      "shortcut": "Shift+Tab",
+      "description": "Previous field in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "escape",
+      "name": "Dismiss",
+      "glyph": "closewin",
+      "theme": "slate",
+      "shortcut": "Escape",
+      "description": "Dismiss a menu or dialog. Does not submit a form."
+    },
+    {
+      "id": "pageup",
+      "name": "Page up",
+      "glyph": "pull",
+      "theme": "indigo",
+      "shortcut": "PageUp",
+      "description": "Page up in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "pagedown",
+      "name": "Page down",
+      "glyph": "push",
+      "theme": "royal",
+      "shortcut": "PageDown",
+      "description": "Page down in the app. An optional custom shortcut can replace the default."
+    },
+    {
+      "id": "charts",
+      "name": "Charts shortcut",
+      "glyph": "chart",
+      "theme": "mint",
+      "description": "Assign the Charts shortcut from thinkorswim Setup > Application Settings > Hot keys."
+    },
+    {
+      "id": "watchlist",
+      "name": "Watchlist shortcut",
+      "glyph": "doc",
+      "theme": "gold",
+      "description": "Assign your Watchlist shortcut from the app hot-key settings."
+    },
+    {
+      "id": "shortcut",
+      "name": "Custom shortcut",
+      "glyph": "keyboard",
+      "theme": "electric",
+      "description": "Set your own app shortcut, for example Ctrl+Shift+N."
+    }
+  ],
+  "uuid": "com.dailyops.thinkorswim.v1",
+  "name": "thinkorswim Controls",
+  "version": "1.0.0.0",
+  "profile": "profiles/thinkorswim",
+  "selector": {
+    "names": [
+      "thinkorswim",
+      "javaw",
+      "java"
+    ],
+    "path": "[\\\\/]thinkorswim(?:[\\\\/]|\\.exe$)"
+  }
+}

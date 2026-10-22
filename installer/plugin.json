@@ -4,7 +4,7 @@
   "PluginId": "com.dailyops.thinkorswim.v1",
   "PluginFolder": "thinkorswim",
   "Profile": "profiles/thinkorswim",
-  "Version": "1.1.1.0",
+  "Version": "1.1.2.0",
   "Repository": "nikhilgs817/streamdeck_thinkorswim",
   "Toolkit": {
     "Version": "2.6.1.0",

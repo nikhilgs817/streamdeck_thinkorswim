@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { keySvg, monoSvg, setAppDesign } from '../shared/icons.js';
 import { ROOT, buildProfile, copyUi, writePluginIcons } from './common.mjs';
-const config=JSON.parse(readFileSync(join(ROOT,'companion.config.json'),'utf8'));
+const config=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(readFileSync(join(ROOT,'companion.config.json'))));
 setAppDesign(config.design);
 const sd=join(ROOT,'plugins',config.id,config.uuid+'.sdPlugin');
 const put=(path,data)=>{const target=join(sd,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,data);};

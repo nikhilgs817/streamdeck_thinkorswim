@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.2
+
+- Restored the original Unicode label separators and broker notes.
+- Reject invalid UTF-8 in app configuration during builds.
+
 ## 1.1.1
 
 - Added a double-click Windows installer with prerequisite checks, package verification, local backups, preserved profiles/settings and automatic rollback.

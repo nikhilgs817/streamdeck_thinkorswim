@@ -25,3 +25,6 @@ tools/*
 !tools/render-app-preview.mjs
 !tools/test-workflows.mjs
 !tools/test-trading-input.mjs
+
+!tools/build-installer.mjs
+!tools/test-installer.ps1

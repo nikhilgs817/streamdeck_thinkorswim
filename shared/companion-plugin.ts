@@ -1,3 +1,4 @@
+import { mkdirSync, writeFileSync } from "node:fs";
 import streamDeck, { action, type KeyDownEvent, type KeyUpEvent, type WillDisappearEvent } from "@elgato/streamdeck";
 import { DailyAction, REGISTRY, globals, type Appearance } from "./base.js";
 import { PRESET_ICONS, setAppDesign } from "./icons.js";
@@ -93,4 +94,10 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 	try { Object.assign(globals, await streamDeck.settings.getGlobalSettings()); } catch { log.warn("Using default focus settings"); }
 	bridge = connectCompanion({ uuid: config.uuid, enabled: () => globals.autoFollow !== false, invoke: (command, device) => command === "show" ? localShow(device) : localBack(device) });
 	for (const [device, count] of visible) bridge.setVisible(device, count > 0);
+
+// A fresh receipt lets the installer verify this connected SDK process without reading settings.
+try {
+    mkdirSync(new URL("../logs/", import.meta.url), { recursive: true });
+    writeFileSync(new URL("../logs/installer-ready.json", import.meta.url), JSON.stringify({ pid: process.pid, readyAt: new Date().toISOString() }), "utf8");
+} catch { log.warn("Installer startup receipt could not be written"); }
 }

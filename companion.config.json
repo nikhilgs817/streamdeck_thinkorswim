@@ -426,7 +426,7 @@
   ],
   "uuid": "com.dailyops.thinkorswim.v1",
   "name": "thinkorswim Controls",
-  "version": "1.1.0.0",
+  "version": "1.1.1.0",
   "profile": "profiles/thinkorswim",
   "selector": {
     "names": [
@@ -470,7 +470,7 @@
   },
   "pages": [
     {
-      "name": "MOMO \u00b7 execution",
+      "name": "MOMO · execution",
       "layout": {
         "0,0": "back",
         "1,0": "buy",
@@ -490,7 +490,7 @@
       }
     },
     {
-      "name": "PLAN \u00b7 daily / 5m / 2m",
+      "name": "PLAN · daily / 5m / 2m",
       "layout": {
         "0,0": "tradepage",
         "1,0": "scan",
@@ -510,7 +510,7 @@
       }
     },
     {
-      "name": "MANAGE \u00b7 protect / reduce",
+      "name": "MANAGE · protect / reduce",
       "layout": {
         "0,0": "tradepage",
         "1,0": "positions",

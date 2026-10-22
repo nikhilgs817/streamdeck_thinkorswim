@@ -1,6 +1,6 @@
 # thinkorswim Controls
 
-Unofficial Windows companion for Elgato Stream Deck. Version 1.1.0.0.
+Unofficial Windows companion for Elgato Stream Deck. Version 1.1.1.0.
 
 Three editable pages organize preparation, execution and position management. Stocks only: no options workflow is bundled.
 
@@ -18,9 +18,17 @@ The input dispatcher and deck behavior are tested with isolated fixtures. No liv
 
 ![Animated keys](docs/images/deck.gif)
 
-## Setup
+## Install in three steps
 
-Requires Windows 10+, Stream Deck 7.1+ and Windows Daily Toolkit 2.6+ for automatic profile switching. Install the package and accept its editable app profile. Toolkit Open App and foreground app changes show the matching keys; Back returns to the main keys. Profiles also work when selected manually. Existing action IDs remain compatible.
+1. Download **ThinkorswimControls-Installer-1.1.1.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
+2. Right-click the ZIP, choose **Extract All**, and open the extracted folder.
+3. Double-click **Install-ThinkorswimControls.cmd**. Wait for the installation success message; Stream Deck restarts automatically.
+
+No Git, Node.js or build commands are required. Windows Daily Toolkit is included for automatic app switching. The installer verifies files, backs up your setup, preserves existing layouts/settings and rolls back failed updates. [Full installation, update and recovery guide](docs/INSTALL.md).
+
+## Use
+
+Requires Windows 10/11 64-bit and Stream Deck 7.1+. Open or focus thinkorswim to show its keys automatically; **Back** returns to the main keys. Profiles also work when selected manually. Configure shortcuts and appearance by selecting a key in Stream Deck. Existing action IDs remain compatible.
 
 ## Appearance
 
@@ -36,6 +44,8 @@ npm test
 npm run test:ui
 npm run validate
 npm run pack
+npm run build:installer
+npm run test:installer
 ```
 
 Installer: `dist/com.dailyops.thinkorswim.v1.streamDeckPlugin`. Sources and dependencies are self-contained. Personal profiles, credentials, account data and build output are excluded from Git.
@@ -49,3 +59,5 @@ Installer: `dist/com.dailyops.thinkorswim.v1.streamDeckPlugin`. Sources and depe
 - [Windows Daily Toolkit](https://github.com/nikhilgs817/windows_daily_toolkit)
 
 Not affiliated with or endorsed by the app publisher. App names belong to their respective owners. MIT license.
+
+The build uses the official Rollup WASM package to avoid native parser dependencies on restricted Windows PCs.

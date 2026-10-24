@@ -4,12 +4,12 @@
   "PluginId": "com.dailyops.thinkorswim.v1",
   "PluginFolder": "thinkorswim",
   "Profile": "profiles/thinkorswim",
-  "Version": "1.2.1.0",
+  "Version": "1.2.2.0",
   "Repository": "nikhilgs817/streamdeck_thinkorswim",
   "Toolkit": {
     "Version": "2.6.1.0",
     "Url": "https://github.com/nikhilgs817/windows_daily_toolkit/releases/download/v2.6.1/WindowsDailyToolkit-Installer-2.6.1.0.zip",
     "Sha256": "c2e1fd3e6e2671b16b7f4a70d54913596569164c5d89cf305e521d60310621c3"
   },
-  "PackageSha256": "f5c2edbcae49fa5eb169d8d885e06833fd895b6973effc19495bc5fe1b1974e8"
+  "PackageSha256": "27c86b83b6a8834f06e1444775fc4d08cd83e4ff01b232ff09c34e417ada64b5"
 }

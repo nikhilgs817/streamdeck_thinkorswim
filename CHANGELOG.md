@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- **Back fixed:** moving between pages (More, Main and the other page keys) no longer replaces your main keys as the place Back returns to. Back, and switching away from the app or minimizing it, now return to your Default profile.
+- Back and page presses are now written to the plugin log for troubleshooting.
+
 ## 1.2.1
 
 - **Back** now returns to your previous profile even when these keys were opened directly in Stream Deck (not through Windows Daily Toolkit).

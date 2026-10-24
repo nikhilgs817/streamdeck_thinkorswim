@@ -67,11 +67,12 @@ public static class TradingKeyboard {
 '@
 [Console]::WriteLine('{"ready":true}')
 while($null -ne ($line=[Console]::ReadLine())){
+ $data=$null
  try {
   $data=$line | ConvertFrom-Json
   $status=[TradingKeyboard]::Send([string[]]$data.selector.names,[string]$data.selector.path,[int]$data.chord.key,[int[]]$data.chord.modifiers,[long]$data.deadline)
   [Console]::WriteLine((@{id=$data.id;status=$status} | ConvertTo-Json -Compress))
- } catch { [Console]::WriteLine('{"status":"unconfirmed"}') }
+ } catch { $rid=0; try { $rid=[int]$data.id } catch { }; [Console]::WriteLine((@{id=$rid;status='unconfirmed'} | ConvertTo-Json -Compress)) }
 }
 `;
 

@@ -111,6 +111,8 @@ class PowerShellHost {
 			const timer = setTimeout(() => {
 				this.#pending.delete(id);
 				resolve({ status: "err", message: `Timed out: ${command}` });
+				// A stuck host would block every later key: restart it.
+				try { this.#proc?.kill(); } catch { /* already gone */ }
 			}, timeoutMs);
 			this.#pending.set(id, { resolve, timer, line });
 			try {
@@ -136,6 +138,7 @@ class PowerShellHost {
 			}
 			const p = this.#pending.get(id);
 			if (!p) continue;
+			this.#restarts = 0; // a healthy reply resets the crash budget
 			clearTimeout(p.timer);
 			this.#pending.delete(id);
 			p.resolve({ status: (status as PsStatus) ?? "err", message: unb64(msg) });

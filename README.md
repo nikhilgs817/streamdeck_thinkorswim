@@ -1,6 +1,6 @@
 # thinkorswim Controls
 
-Unofficial Windows companion for Elgato Stream Deck. Version 1.1.2.0.
+Unofficial Windows companion for Elgato Stream Deck. Version 1.2.0.0.
 
 Three editable pages organize preparation, execution and position management. Stocks only: no options workflow is bundled.
 
@@ -14,13 +14,13 @@ Keys marked SETUP have no working default. Match a broker-supported hotkey in th
 
 thinkorswim supports direct Active Trader orders with Auto Send. Configure and verify the intended Buy/Sell behavior in paperMoney first. General Monitor, Scan and Charts shortcuts are provided and can be overridden; the Trade shortcut may be customized. This installation exposes no usable Java control tree for the bracket template picker, so OTOCO requires a supported editor-opening shortcut or manual selection of Active Trader > Template > TRG w/bracket. The plugin does not claim automatic template selection works on inaccessible Java controls.
 
-The input dispatcher and deck behavior are tested with isolated fixtures. No live orders were placed, changed or cancelled during validation.
+The Custom shortcut and other non-trading keys send one shortcut and never Enter, so they cannot be used to bypass the trading safeguards. The input dispatcher and deck behavior are tested with isolated fixtures. No live orders were placed, changed or cancelled during validation.
 
 ![Animated keys](docs/images/deck.gif)
 
 ## Install in three steps
 
-1. Download **ThinkorswimControls-Installer-1.1.2.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
+1. Download **ThinkorswimControls-Installer-1.2.0.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
 2. Right-click the ZIP, choose **Extract All**, and open the extracted folder.
 3. Double-click **Install-ThinkorswimControls.cmd**. Wait for the installation success message; Stream Deck restarts automatically.
 
@@ -32,7 +32,9 @@ Requires Windows 10/11 64-bit and Stream Deck 7.1+. Open or focus thinkorswim to
 
 ## Appearance
 
-App theme is the default: app-specific surfaces, type, corners and motion. Labels stay still while icon details animate in a six-second loop at 12 fps. Hidden keys stop animating. Colourful, Vivid and Pro remain available with 29 colours, custom labels, glyphs and pictures. App theme uses its own palette; choose another style for custom colours. Buy and Sell retain their semantic colours in App theme.
+![Styles](docs/images/styles.png)
+
+**thinkorswim Dark** is the default: black trading-terminal keys, a teal accent, bold Segoe UI labels and an animated icon on every key (candles grow, the ladder lights level by level, the scanner sweeps, Level 2 bars breathe, the trail-stop dot moves along the price). The icon moves gently and an accent light travels round the key; labels stay still. **Buy is always green and Sell always red** in every style. thinkorswim Light, Colourful, Vivid and Pro use the same icons; Colourful, Vivid and Pro accept any colour. Decorative candles, bars and dots are animation only, never live market data.
 
 ## Build and verify
 
@@ -58,6 +60,10 @@ Installer: `dist/com.dailyops.thinkorswim.v1.streamDeckPlugin`. Sources and depe
 - [Official app documentation 2](https://toslc.thinkorswim.com/center/howToTos/thinkManual/Trade/Active-Trader/AT-Entering-Orders)
 - [Windows Daily Toolkit](https://github.com/nikhilgs817/windows_daily_toolkit)
 
-Not affiliated with or endorsed by the app publisher. App names belong to their respective owners. MIT license.
+## Trading risk
+
+Trading involves risk of loss. This plugin only sends the keyboard shortcuts you configure; your broker settings decide what an order does (Auto Send places orders immediately). **Use at your own risk, test in paperMoney first, and keep the keys you use for orders where you won't press them by accident.** This is not financial advice and there is no warranty or liability (see LICENSE).
+
+Not affiliated with or endorsed by Charles Schwab & Co., Inc. thinkorswim is a trademark of Charles Schwab & Co., Inc. The icons are original artwork. MIT license.
 
 The build uses the official Rollup WASM package to avoid native parser dependencies on restricted Windows PCs.

@@ -48,6 +48,8 @@ try{
   }else{
    await wait(()=>commands().length>before);const sent=commands().at(-1);
    if(c.operation==='url')check(c.id+' opens the exact configured URL',sent.command==='url'&&sent.args[0]===(binding.destination||c.url));
+   else if(c.operation==='applink')check(c.id+' opens its in-app link',sent.command==='url'&&sent.args[0]===c.link&&c.link.startsWith(config.linkScheme));
+   else if(sent.command==='appkeys'){const steps=JSON.parse(sent.args[2]);check(c.id+' sends only to the verified app',sent.args[0]===config.selector.names.join('|')&&sent.args[1]===(config.selector.path||''));if(c.shortcut==='Win+H')check(c.id+' presses Win+H',steps.some(x=>x.win===72));if(c.operation!=='focus'&&c.shortcut)check(c.id+' sends its shortcut steps',steps.some(x=>x.k||x.win));}
    else{check(c.id+' targets only the configured app',JSON.stringify(sent.data.selector)===JSON.stringify(config.selector));if(c.menu&&!needsBinding)check(c.id+' preserves panel and picker navigation',JSON.stringify(sent.data.menu)===JSON.stringify(c.menu));if(needsBinding&&c.trading)check(c.id+' sends one chord without an appended submit',sent.command==='trading-hotkey'&&sent.data.chord.key===88);}
   }
  }
@@ -60,10 +62,11 @@ try{
   event('keyDown',hold,{shortcut:'Ctrl+Alt+F'});event('willDisappear',hold);await sleep(hold.holdMs+80);check('leaving the page cancels a pending hold',commands().length===start);
   check('Buy and Sell have no guessed executable defaults',config.commands.filter(c=>['buy','sell'].includes(c.id)).every(c=>!c.shortcut&&!c.menu));
  }
- for(const style of ['app','neon','vivid','pro'])for(const c of config.commands){
+ if(config.trading){const sc=config.commands.find(c=>c.id==='shortcut');for(const bad of ['Ctrl+Alt+B Enter','Enter','Ctrl+Enter']){const before=commands().length,alerts=received.filter(m=>m.event==='showAlert').length;press(sc,{shortcut:bad});await wait(()=>received.filter(m=>m.event==='showAlert').length>alerts);check('custom key refuses '+bad+' in a trading app',commands().length===before);}}
+ for(const style of ['app','light','neon','vivid','pro'])for(const c of config.commands){
   const render=phase=>new Resvg(keySvg({glyph:c.glyph,theme:c.theme,label:c.name,style,motion:{kind:'comp-'+c.id,phase}})).render().pixels;
   check(c.id+' '+style+' motion loops without a jump',!Buffer.from(render(0)).equals(Buffer.from(render(.25)))&&Buffer.from(render(0)).equals(Buffer.from(render(1))));
  }
- check('29 custom colours remain available',Object.keys(THEMES).length===29);
+ check('custom colours remain available',Object.keys(THEMES).length>=29);
  console.log(`${count} checks passed for ${config.app}`);
 }catch(error){console.error(output.slice(-1800));console.error(JSON.stringify(received.filter(m=>m.event!=='setImage').slice(-10)));throw error;}finally{proc.kill();server.close();}

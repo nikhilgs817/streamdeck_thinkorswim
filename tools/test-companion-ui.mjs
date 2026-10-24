@@ -6,7 +6,7 @@ import {chromium} from 'playwright';
 const config=JSON.parse(readFileSync('companion.config.json')),ui=join(process.cwd(),'plugins',config.id,config.uuid+'.sdPlugin/ui');
 const server=createServer((req,res)=>{const file=new URL(req.url,'http://localhost').pathname.slice(1)||'pi.html';if(!['pi.html','pi.js','pi.css','icons.js','companion.js'].includes(file)){res.writeHead(404).end();return;}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(readFileSync(join(ui,file)));});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
+const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 try{
  const page=await browser.newPage({viewport:{width:440,height:800}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{window.saved=[];window.globalSaved=[];window.events=[];window.WebSocket=class{readyState=1;constructor(){setTimeout(()=>this.onopen?.(),0);}send(raw){const m=JSON.parse(raw);if(m.event==='setSettings')window.saved.push(m.payload);if(m.event==='setGlobalSettings')window.globalSaved.push(m.payload);if(m.event==='sendToPlugin')window.events.push(m.payload.event);if(m.event==='getGlobalSettings')setTimeout(()=>this.onmessage?.({data:JSON.stringify({event:'didReceiveGlobalSettings',payload:{settings:{}}})}),0);}};});
@@ -22,6 +22,7 @@ try{
  await page.locator('#animate').uncheck();await page.waitForFunction(()=>window.saved.at(-1)?.animate===false);assert.equal(await page.locator('#preview rect[stroke-dashoffset]').count(),0);
  await page.locator('#animate').check();await page.waitForFunction(()=>window.saved.at(-1)?.animate===true);
  await page.locator('#companionShow').click();await page.waitForFunction(()=>window.events.includes('companionShow'));
+ if(config.design?.light){await page.locator('#styleLight').click();await page.waitForFunction(()=>window.saved.at(-1)?.iconStyle==='light');}
  await page.locator('#styleApp').click();await page.waitForFunction(()=>window.saved.at(-1)?.iconStyle==='app');
  mkdirSync('docs/images',{recursive:true});await page.screenshot({path:'docs/images/settings.png',fullPage:true});
  const url=config.commands.find(c=>c.operation==='url');

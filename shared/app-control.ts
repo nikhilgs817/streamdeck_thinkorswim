@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { appendFileSync } from "node:fs";
 import type { AppSelector } from "./companion-specs.js";
 import type { PsResult } from "./ps.js";
-export type AppControl = { selector: AppSelector; keys?: string; chords?: string[]; menu?: string[][]; choices?: { names: string[]; options: string[] }[] };
+export type AppControl = { selector: AppSelector; keys?: string; chords?: string[]; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; last?: boolean };
 /** Separate worker bounds slow accessibility providers and verifies the foreground app before input. */
 export const APP_CONTROL_SCRIPT = String.raw`
 $ErrorActionPreference='Stop'
@@ -51,8 +51,8 @@ try{
    $condition=if($conditions.Count -eq 1){$conditions[0]}else{[System.Windows.Automation.OrCondition]::new([System.Windows.Automation.Condition[]]$conditions)}
    $hits=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$condition) | Where-Object {$_.Current.IsEnabled -and -not $_.Current.IsOffscreen -and $_.Current.ProcessId -eq $chosen.Id})
    $usable=@($hits | Where-Object {$pattern=$null;$_.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern) -or $_.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern) -or $_.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)})
-   if($usable.Count -ne 1){throw 'This control is not uniquely exposed by the app. Set its keyboard shortcut in the key settings.'}
-   Confirm-Target;$element=$usable[0];$pattern=$null
+   if($usable.Count -lt 1 -or ($usable.Count -gt 1 -and -not $data.last)){throw 'This control is not available in the app right now. Set its keyboard shortcut in the key settings.'}
+   Confirm-Target;$element=if($data.last){$usable[$usable.Count-1]}else{$usable[0]};$pattern=$null
    if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke()}
    elseif($element.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){$pattern.Expand()}
    elseif($element.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)){$pattern.Select()}

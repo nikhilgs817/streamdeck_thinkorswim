@@ -8,8 +8,20 @@ import { shortcutToSendKeys } from "./shortcuts.js";
 import type { AppSelector } from "./companion-specs.js";
 import { TradingInput } from "./trading-input.js";
 import { ps } from "./ps.js";
-export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; operation?: "back" | "focus" | "url" | "page"; url?: string; page?: number; trading?: "submit" | "bracket" | "panel"; setup?: string; executionNote?: string; hidden?: boolean; holdMs?: number; requiresBinding?: boolean };
-export type CompanionConfig = { uuid: string; name: string; profile: string; selector: AppSelector; commands: CompanionCommand[]; design?: Record<string, unknown> };
+export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; operation?: "back" | "focus" | "url" | "page" | "applink"; url?: string; link?: string; page?: number; trading?: "submit" | "bracket" | "panel"; setup?: string; executionNote?: string; hidden?: boolean; holdMs?: number; requiresBinding?: boolean; last?: boolean; waitMs?: number };
+export type CompanionConfig = { uuid: string; name: string; profile: string; selector: AppSelector; commands: CompanionCommand[]; design?: Record<string, unknown>; linkScheme?: string; fastKeys?: boolean; trading?: boolean };
+
+/** Turns "Ctrl+Shift+O" / "Ctrl+Shift+; Up" / "Win+H" into verified host steps. */
+export function shortcutSteps(shortcut: string): { k?: string; win?: number; w?: number }[] | undefined {
+	const steps: { k?: string; win?: number; w?: number }[] = [];
+	for (const chord of shortcut.trim().split(/\s+/).filter(Boolean)) {
+		const win = /^win\+([a-z0-9])$/i.exec(chord);
+		if (win) steps.push({ win: win[1].toUpperCase().charCodeAt(0) });
+		else { const k = shortcutToSendKeys(chord); if (!k) return undefined; steps.push({ k }); }
+		steps.push({ w: 60 });
+	}
+	return steps.length && steps.length <= 16 ? steps : undefined;
+}
 type KeySettings = Appearance & { shortcut?: string; destination?: string };
 
 export async function bootCompanion(config: CompanionConfig): Promise<void> {
@@ -30,6 +42,7 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 		class AppKey extends DailyAction<KeySettings> {
 			protected readonly kind = "comp-" + definition.id;
 			#held = new Set<string>();
+			#busy = new Set<string>();
 			#pending = new Map<string, ReturnType<typeof setTimeout>>();
 			#release(id: string): void { this.#held.delete(id); clearTimeout(this.#pending.get(id)); this.#pending.delete(id); }
 			override onWillDisappear(ev: WillDisappearEvent<KeySettings>): void { this.#release(ev.action.id); super.onWillDisappear(ev); }
@@ -41,6 +54,16 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 				try {
 					if (definition.operation === "back") { await back(ev.action.device.id); return; }
 					if (definition.operation === "page") { await streamDeck.profiles.switchToProfile(ev.action.device.id, config.profile, definition.page || 0); return; }
+					if (definition.operation === "applink") {
+						// Fixed in-app links from the plugin's own config (never from key settings), e.g. claude://claude.ai/new
+						const link = definition.link || "";
+						if (!config.linkScheme || !link.startsWith(config.linkScheme)) { await this.feedback(ev.action, { status: "miss", message: "This app link is not available" }); return; }
+						const opened = await ps.run("url", [link]);
+						if (opened.status !== "ok" || !definition.menu) { await this.feedback(ev.action, opened, false); return; }
+						// Then press an on-screen button the app exposes (for example the incognito toggle on a new chat).
+						await new Promise((r) => setTimeout(r, definition.waitMs || 1500));
+						await this.feedback(ev.action, await controlApp({ selector: config.selector, menu: definition.menu, last: definition.last }), false); return;
+					}
 					if (definition.operation === "url") {
 						const url = ev.payload.settings.destination?.trim() || definition.url;
 						if (!url || !/^https?:\/\//i.test(url)) { await this.feedback(ev.action, {status:"miss", message:"Enter the full http:// or https:// page URL"}); return; }
@@ -63,10 +86,27 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 						if (definition.trading === "submit" || definition.requiresBinding) { await this.feedback(ev.action, { status: "miss", message: "Match this key to a supported action in your broker settings" }); return; }
 					}
 					const shortcut = ev.payload.settings.shortcut?.trim() || definition.shortcut;
+					if (definition.operation === "focus" && !shortcut && (config.linkScheme || config.fastKeys)) {
+						await this.feedback(ev.action, await ps.run("appkeys", [config.selector.names.join("|"), config.selector.path || "", "[]"], 8000), false); return;
+					}
+					// Trading apps: generic keys may only send one chord and never Enter, so they cannot bypass the trading safeguards.
+					if (config.trading && shortcut && !definition.trading && (shortcut.trim().split(/\s+/).length > 1 || /(^|\+)(enter|return)$/i.test(shortcut.trim()))) {
+						await this.feedback(ev.action, { status: "miss", message: "In trading apps this key sends one shortcut without Enter. Use the Buy/Sell keys for orders." }); return;
+					}
+					if (shortcut && !definition.menu && (config.linkScheme || config.fastKeys)) {
+						// Fast path: the warm host verifies the app is in front before every step and never steals input elsewhere.
+						const steps = shortcutSteps(shortcut);
+						if (!steps) { await this.feedback(ev.action, { status: "miss", message: "Use a shortcut such as Ctrl+Shift+O" }); return; }
+						if (this.#busy.has(ev.action.id)) return;
+						this.#busy.add(ev.action.id);
+						try { await this.feedback(ev.action, await ps.run("appkeys", [config.selector.names.join("|"), config.selector.path || "", JSON.stringify(steps)], 8000), false); }
+						finally { this.#busy.delete(ev.action.id); }
+						return;
+					}
 					const keys = shortcut ? shortcutToSendKeys(shortcut) : undefined;
 					if (shortcut && !keys) { await this.feedback(ev.action, { status: "miss", message: "Use a shortcut such as Ctrl+Shift+N" }); return; }
 					if (!keys && !definition.menu && definition.operation !== "focus") { await this.feedback(ev.action, { status: "miss", message: "Set this key's shortcut in settings" }); return; }
-					const result = await controlApp({ selector: config.selector, ...(keys ? { keys, chords: shortcut!.split(/\s+/).map((chord) => shortcutToSendKeys(chord)!) } : definition.menu ? { menu: definition.menu, choices: definition.choices } : {}) });
+					const result = await controlApp({ selector: config.selector, ...(keys ? { keys, chords: shortcut!.split(/\s+/).map((chord) => shortcutToSendKeys(chord)!) } : definition.menu ? { menu: definition.menu, choices: definition.choices, last: definition.last } : {}) });
 					await this.feedback(ev.action, result, false);
 				} catch { await this.feedback(ev.action, { status: "err", message: "App controls are unavailable" }); }
 			}

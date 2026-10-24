@@ -4,22 +4,22 @@
   "repo": "streamdeck_thinkorswim",
   "app": "thinkorswim",
   "glyph": "candles",
-  "theme": "mint",
+  "theme": "thinkorswim",
   "reference": "https://toslc.thinkorswim.com/center/howToTos/thinkManual/Getting-Started/Keyboard-Shortcuts",
   "commands": [
     {
       "id": "back",
       "name": "Back",
       "glyph": "back",
-      "theme": "gold",
+      "theme": "thinkorswim",
       "description": "Return to the main Stream Deck keys.",
       "operation": "back"
     },
     {
       "id": "buy",
       "name": "Buy",
-      "glyph": "tradebuy",
-      "theme": "emerald",
+      "glyph": "buy",
+      "theme": "thinkorswim",
       "trading": "submit",
       "description": "Send your configured immediate Buy hotkey once, using the symbol, account, quantity and order defaults in the trading app.",
       "setup": "In Setup > Application Settings > Hot keys > Active Trader, assign the Buy action. Match that hotkey here and verify its immediate-submit behavior in paperMoney. The app controls quantity, template and Auto Send."
@@ -27,8 +27,8 @@
     {
       "id": "sell",
       "name": "Sell",
-      "glyph": "tradesell",
-      "theme": "crimson",
+      "glyph": "sell",
+      "theme": "thinkorswim",
       "trading": "submit",
       "description": "Send your configured immediate Sell hotkey once, using the current trading app defaults.",
       "setup": "Assign the Sell action in Active Trader hot-key settings, then enter exactly that hotkey here. The app controls quantity and Auto Send."
@@ -36,8 +36,8 @@
     {
       "id": "otoco",
       "name": "OTOCO",
-      "glyph": "tradebracket",
-      "theme": "cosmic",
+      "glyph": "otoco",
+      "theme": "thinkorswim",
       "trading": "bracket",
       "description": "Open the editable entry, profit-target and stop-loss bracket. This button does not send the order.",
       "menu": [
@@ -66,8 +66,8 @@
     {
       "id": "positions",
       "name": "Positions",
-      "glyph": "briefcase",
-      "theme": "ocean",
+      "glyph": "positions",
+      "theme": "thinkorswim",
       "trading": "panel",
       "description": "Show open positions in the app, including position size and profit/loss.",
       "setup": "Uses the General hot-key binding. Change the override if you customized it. Positions and working orders share Monitor > Activity and Positions.",
@@ -76,8 +76,8 @@
     {
       "id": "orders",
       "name": "Orders",
-      "glyph": "tradeorders",
-      "theme": "gold",
+      "glyph": "orders",
+      "theme": "thinkorswim",
       "trading": "panel",
       "description": "Show working orders and fills.",
       "setup": "Uses the General hot-key binding. Change the override if you customized it. Positions and working orders share Monitor > Activity and Positions.",
@@ -86,8 +86,8 @@
     {
       "id": "activetrader",
       "name": "Trade",
-      "glyph": "candles",
-      "theme": "mint",
+      "glyph": "ladder",
+      "theme": "thinkorswim",
       "trading": "panel",
       "description": "Open the Trade workspace. Select Active Trader there. Override if your General > Trade hotkey is customized.",
       "setup": "Optional: enter a matching app hotkey for faster panel switching.",
@@ -96,8 +96,8 @@
     {
       "id": "charts",
       "name": "Charts",
-      "glyph": "chart",
-      "theme": "azure",
+      "glyph": "candles",
+      "theme": "thinkorswim",
       "trading": "panel",
       "description": "Show the chart workspace.",
       "setup": "Uses Charts. Keep linked Daily, 5-minute and 2-minute charts visible together so the symbol stays synchronized.",
@@ -106,8 +106,8 @@
     {
       "id": "leveltwo",
       "name": "Level 2",
-      "glyph": "candles",
-      "theme": "cyan",
+      "glyph": "leveltwo",
+      "theme": "thinkorswim",
       "menu": [
         [
           "Trade"
@@ -124,8 +124,8 @@
     {
       "id": "timesales",
       "name": "Time & Sales",
-      "glyph": "doc",
-      "theme": "violet",
+      "glyph": "timesales",
+      "theme": "thinkorswim",
       "menu": [
         [
           "Trade"
@@ -142,8 +142,8 @@
     {
       "id": "watchlist",
       "name": "Watchlist",
-      "glyph": "doc",
-      "theme": "gold",
+      "glyph": "watchlist",
+      "theme": "thinkorswim",
       "description": "Assign your Watchlist shortcut from the app hot-key settings.",
       "trading": "panel",
       "menu": [
@@ -158,8 +158,8 @@
     {
       "id": "hotkeys",
       "name": "Hot-key setup",
-      "glyph": "keyboard",
-      "theme": "electric",
+      "glyph": "hotkeys",
+      "theme": "thinkorswim",
       "menu": [
         [
           "Setup"
@@ -181,16 +181,16 @@
     {
       "id": "focus",
       "name": "Focus app",
-      "glyph": "target",
-      "theme": "ocean",
+      "glyph": "focus",
+      "theme": "thinkorswim",
       "description": "Bring the verified app window to the front.",
       "operation": "focus"
     },
     {
       "id": "chartsettings",
       "name": "Chart settings",
-      "glyph": "gear",
-      "theme": "mint",
+      "glyph": "chartsettings",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+S",
       "description": "Open chart settings with a chart selected. Match your app shortcut if customized.",
       "hidden": false
@@ -198,8 +198,8 @@
     {
       "id": "timeframe",
       "name": "Time frame",
-      "glyph": "calendar",
-      "theme": "ocean",
+      "glyph": "timeframe",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+T",
       "description": "Open chart time-frame setup with a chart selected.",
       "hidden": false
@@ -207,17 +207,17 @@
     {
       "id": "zoomin",
       "name": "Zoom in",
-      "glyph": "search",
-      "theme": "tropical",
-      "shortcut": "Ctrl+Plus",
+      "glyph": "zoomin",
+      "theme": "thinkorswim",
+      "shortcut": "Ctrl+=",
       "description": "Zoom the focused chart in.",
       "hidden": false
     },
     {
       "id": "zoomout",
       "name": "Zoom out",
-      "glyph": "search",
-      "theme": "sky",
+      "glyph": "zoomout",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+-",
       "description": "Zoom the focused chart out.",
       "hidden": false
@@ -226,7 +226,7 @@
       "id": "copy",
       "name": "Copy",
       "glyph": "copy",
-      "theme": "violet",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+C",
       "description": "Copy in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -235,7 +235,7 @@
       "id": "paste",
       "name": "Paste",
       "glyph": "paste",
-      "theme": "crimson",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+V",
       "description": "Paste in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -243,8 +243,8 @@
     {
       "id": "undo",
       "name": "Undo",
-      "glyph": "back",
-      "theme": "iris",
+      "glyph": "undo",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+Z",
       "description": "Undo in the selected editable field or editor.",
       "hidden": true
@@ -252,8 +252,8 @@
     {
       "id": "redo",
       "name": "Redo",
-      "glyph": "push",
-      "theme": "azure",
+      "glyph": "redo",
+      "theme": "thinkorswim",
       "shortcut": "Ctrl+Y",
       "description": "Redo in the selected editable field or editor.",
       "hidden": true
@@ -261,8 +261,8 @@
     {
       "id": "nextfield",
       "name": "Next field",
-      "glyph": "push",
-      "theme": "azure",
+      "glyph": "nextfield",
+      "theme": "thinkorswim",
       "shortcut": "Tab",
       "description": "Next field in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -270,8 +270,8 @@
     {
       "id": "previousfield",
       "name": "Previous field",
-      "glyph": "pull",
-      "theme": "iris",
+      "glyph": "previousfield",
+      "theme": "thinkorswim",
       "shortcut": "Shift+Tab",
       "description": "Previous field in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -279,8 +279,8 @@
     {
       "id": "escape",
       "name": "Dismiss",
-      "glyph": "closewin",
-      "theme": "slate",
+      "glyph": "escape",
+      "theme": "thinkorswim",
       "shortcut": "Escape",
       "description": "Dismiss a menu or dialog. Does not submit a form.",
       "hidden": false
@@ -288,8 +288,8 @@
     {
       "id": "pageup",
       "name": "Page up",
-      "glyph": "pull",
-      "theme": "indigo",
+      "glyph": "pageup",
+      "theme": "thinkorswim",
       "shortcut": "PageUp",
       "description": "Page up in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -297,8 +297,8 @@
     {
       "id": "pagedown",
       "name": "Page down",
-      "glyph": "push",
-      "theme": "royal",
+      "glyph": "pagedown",
+      "theme": "thinkorswim",
       "shortcut": "PageDown",
       "description": "Page down in the app. An optional custom shortcut can replace the default.",
       "hidden": true
@@ -306,16 +306,16 @@
     {
       "id": "shortcut",
       "name": "Custom shortcut",
-      "glyph": "keyboard",
-      "theme": "electric",
+      "glyph": "shortcut",
+      "theme": "thinkorswim",
       "description": "Set your own app shortcut, for example Ctrl+Shift+N.",
       "hidden": false
     },
     {
       "id": "tradepage",
       "name": "Trade",
-      "glyph": "grid",
-      "theme": "mint",
+      "glyph": "tradepage",
+      "theme": "thinkorswim",
       "description": "Show the Trade Stream Deck page.",
       "operation": "page",
       "page": 0
@@ -323,8 +323,8 @@
     {
       "id": "planpage",
       "name": "Plan / Scan",
-      "glyph": "grid",
-      "theme": "mint",
+      "glyph": "planpage",
+      "theme": "thinkorswim",
       "description": "Show the Plan / Scan Stream Deck page.",
       "operation": "page",
       "page": 1
@@ -332,8 +332,8 @@
     {
       "id": "managepage",
       "name": "Manage",
-      "glyph": "grid",
-      "theme": "mint",
+      "glyph": "managepage",
+      "theme": "thinkorswim",
       "description": "Show the Manage Stream Deck page.",
       "operation": "page",
       "page": 2
@@ -341,32 +341,32 @@
     {
       "id": "riskcheck",
       "name": "Risk check",
-      "glyph": "target",
-      "theme": "mint",
+      "glyph": "riskcheck",
+      "theme": "thinkorswim",
       "description": "Open your risk and position-sizing page. Configure its full URL.",
       "operation": "url"
     },
     {
       "id": "tradeplan",
       "name": "Trade plan",
-      "glyph": "doc",
-      "theme": "mint",
+      "glyph": "tradeplan",
+      "theme": "thinkorswim",
       "description": "Open your trade plan: daily trend, setup, entry, invalidation, target and size. Configure its full URL.",
       "operation": "url"
     },
     {
       "id": "journal",
       "name": "Journal",
-      "glyph": "doc",
-      "theme": "mint",
+      "glyph": "journal",
+      "theme": "thinkorswim",
       "description": "Open your trading journal to record the setup, execution and outcome. Configure its full URL.",
       "operation": "url"
     },
     {
       "id": "partial",
       "name": "Trim 1/3",
-      "glyph": "tradesell",
-      "theme": "mint",
+      "glyph": "partial",
+      "theme": "thinkorswim",
       "description": "Send your configured partial-exit hotkey. The broker must calculate one third of the current position and preserve or resize remaining protection.",
       "trading": "submit",
       "requiresBinding": true,
@@ -375,8 +375,8 @@
     {
       "id": "breakeven",
       "name": "Stop to B/E",
-      "glyph": "tradebracket",
-      "theme": "mint",
+      "glyph": "breakeven",
+      "theme": "thinkorswim",
       "description": "Send your configured stop-to-breakeven hotkey. The broker must derive the actual fill price and remaining quantity.",
       "trading": "submit",
       "requiresBinding": true,
@@ -385,8 +385,8 @@
     {
       "id": "trail",
       "name": "Trail stop",
-      "glyph": "tradebracket",
-      "theme": "mint",
+      "glyph": "trail",
+      "theme": "thinkorswim",
       "description": "Open the broker stop editor or send its configured trailing-stop hotkey. Review the remaining size and 5-minute structure.",
       "trading": "panel",
       "requiresBinding": true,
@@ -395,8 +395,8 @@
     {
       "id": "flatten",
       "name": "Flatten",
-      "glyph": "closewin",
-      "theme": "mint",
+      "glyph": "flatten",
+      "theme": "thinkorswim",
       "description": "Hold for one second to send the configured close-position action once. Match its cancel/close behavior in your broker.",
       "trading": "submit",
       "requiresBinding": true,
@@ -406,8 +406,8 @@
     {
       "id": "cancelall",
       "name": "Cancel orders",
-      "glyph": "tradeorders",
-      "theme": "mint",
+      "glyph": "cancelall",
+      "theme": "thinkorswim",
       "description": "Hold for one second to send the configured cancel-orders action once. Cancelling protective orders can leave a position unprotected.",
       "trading": "submit",
       "requiresBinding": true,
@@ -417,8 +417,8 @@
     {
       "id": "scan",
       "name": "Scanner",
-      "glyph": "search",
-      "theme": "mint",
+      "glyph": "scan",
+      "theme": "thinkorswim",
       "description": "Open Stock Hacker / Scan for your momentum watchlist. No options or orders are selected.",
       "shortcut": "Ctrl+4",
       "trading": "panel"
@@ -426,7 +426,7 @@
   ],
   "uuid": "com.dailyops.thinkorswim.v1",
   "name": "thinkorswim Controls",
-  "version": "1.1.2.0",
+  "version": "1.2.0.0",
   "profile": "profiles/thinkorswim",
   "selector": {
     "names": [
@@ -461,16 +461,18 @@
   "design": {
     "id": "thinkorswim",
     "name": "thinkorswim",
-    "background": "#151617",
-    "surface": "#242628",
-    "ink": "#d8dcdf",
-    "accent": "#4bb18b",
-    "border": "#474b4f",
+    "styleName": "thinkorswim Dark",
+    "light": true,
+    "background": "#0B0C0D",
+    "surface": "#17191B",
+    "ink": "#E2E6EA",
+    "accent": "#1FC7B6",
+    "border": "#34383C",
     "radius": 3
   },
   "pages": [
     {
-      "name": "MOMO \u00b7 execution",
+      "name": "MOMO · execution",
       "layout": {
         "0,0": "back",
         "1,0": "buy",
@@ -490,7 +492,7 @@
       }
     },
     {
-      "name": "PLAN \u00b7 daily / 5m / 2m",
+      "name": "PLAN · daily / 5m / 2m",
       "layout": {
         "0,0": "tradepage",
         "1,0": "scan",
@@ -510,7 +512,7 @@
       }
     },
     {
-      "name": "MANAGE \u00b7 protect / reduce",
+      "name": "MANAGE · protect / reduce",
       "layout": {
         "0,0": "tradepage",
         "1,0": "positions",
@@ -528,5 +530,6 @@
         "4,2": "focus"
       }
     }
-  ]
+  ],
+  "fastKeys": true
 }

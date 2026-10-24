@@ -1,7 +1,7 @@
 {
   "name": "streamdeck-thinkorswim",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Unofficial thinkorswim controls for Elgato Stream Deck on Windows",
   "scripts": {
     "build": "node tools/generate.mjs && rollup -c",

@@ -1,6 +1,6 @@
 # thinkorswim Controls
 
-Unofficial Windows companion for Elgato Stream Deck. Version 1.2.0.0.
+Unofficial Windows companion for Elgato Stream Deck. Version 1.2.1.0.
 
 Three editable pages organize preparation, execution and position management. Stocks only: no options workflow is bundled.
 
@@ -20,7 +20,7 @@ The Custom shortcut and other non-trading keys send one shortcut and never Enter
 
 ## Install in three steps
 
-1. Download **ThinkorswimControls-Installer-1.2.0.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
+1. Download **ThinkorswimControls-Installer-1.2.1.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
 2. Right-click the ZIP, choose **Extract All**, and open the extracted folder.
 3. Double-click **Install-ThinkorswimControls.cmd**. Wait for the installation success message; Stream Deck restarts automatically.
 

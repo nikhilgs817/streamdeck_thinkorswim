@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import streamDeck, { action, type KeyDownEvent, type KeyUpEvent, type WillDisappearEvent } from "@elgato/streamdeck";
+import streamDeck, { action, type KeyDownEvent, type KeyUpEvent, type WillAppearEvent, type WillDisappearEvent } from "@elgato/streamdeck";
 import { DailyAction, REGISTRY, globals, type Appearance } from "./base.js";
 import { PRESET_ICONS, setAppDesign } from "./icons.js";
 import { connectCompanion, type CompanionConnection } from "./companion-routing.js";
@@ -8,7 +8,10 @@ import { shortcutToSendKeys } from "./shortcuts.js";
 import type { AppSelector } from "./companion-specs.js";
 import { TradingInput } from "./trading-input.js";
 import { ps } from "./ps.js";
-export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; operation?: "back" | "focus" | "url" | "page" | "applink"; url?: string; link?: string; page?: number; trading?: "submit" | "bracket" | "panel"; setup?: string; executionNote?: string; hidden?: boolean; holdMs?: number; requiresBinding?: boolean; last?: boolean; waitMs?: number };
+import { readClaude, readCodex, untilText, type UsageReading, type UsageSource, type UsageWindow } from "./usage.js";
+import { meterKeySvg } from "./brands/brand-keys.js";
+import { THEMES, svgDataUri } from "./icons.js";
+export type CompanionCommand = { id: string; name: string; glyph: string; theme: string; description: string; shortcut?: string; menu?: string[][]; choices?: { names: string[]; options: string[] }[]; operation?: "back" | "focus" | "url" | "page" | "applink"; url?: string; link?: string; page?: number; trading?: "submit" | "bracket" | "panel"; setup?: string; executionNote?: string; hidden?: boolean; holdMs?: number; requiresBinding?: boolean; last?: boolean; waitMs?: number; meter?: { source: UsageSource; window: UsageWindow } };
 export type CompanionConfig = { uuid: string; name: string; profile: string; selector: AppSelector; commands: CompanionCommand[]; design?: Record<string, unknown>; linkScheme?: string; fastKeys?: boolean; trading?: boolean };
 
 /** Turns "Ctrl+Shift+O" / "Ctrl+Shift+; Up" / "Win+H" into verified host steps. */
@@ -24,6 +27,26 @@ export function shortcutSteps(shortcut: string): { k?: string; win?: number; w?:
 }
 type KeySettings = Appearance & { shortcut?: string; destination?: string };
 
+/** Latest usage reading per source, refreshed every 60 s while a meter key is visible. */
+const readings = new Map<UsageSource, UsageReading>();
+const meterKeys = new Map<string, { source: UsageSource; repaint: () => Promise<void> }>();
+let meterTimer: NodeJS.Timeout | undefined;
+async function refreshUsage(source: UsageSource): Promise<void> {
+	if (source === "codex") readings.set(source, readCodex());
+	else {
+		const blob = typeof globals.claudeUsageKey === "string" ? globals.claudeUsageKey : "";
+		let key: string | undefined;
+		if (blob) { const r = await ps.run("secret-unprotect", [blob, "claude-usage"]); if (r.status === "ok") key = r.message; }
+		readings.set(source, await readClaude(key));
+		key = undefined;
+	}
+	for (const k of meterKeys.values()) if (k.source === source) await k.repaint().catch(() => undefined);
+}
+function watchMeters(): void {
+	if (meterKeys.size && !meterTimer) meterTimer = setInterval(() => { for (const s of new Set([...meterKeys.values()].map((k) => k.source))) void refreshUsage(s); }, 60_000).unref();
+	else if (!meterKeys.size && meterTimer) { clearInterval(meterTimer); meterTimer = undefined; }
+}
+
 export async function bootCompanion(config: CompanionConfig): Promise<void> {
 	setAppDesign(config.design);
 	streamDeck.logger.setLevel("info");
@@ -35,7 +58,15 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 	const localShow = async (device: string) => { await streamDeck.profiles.switchToProfile(device, config.profile, 0); };
 	const localBack = async (device: string) => { await streamDeck.profiles.switchToProfile(device); };
 	const show = async (device: string) => { if (bridge?.connected) await bridge.request("show", device); else await localShow(device); };
-	const back = async (device: string) => { if (bridge?.connected) await bridge.request("back", device); else await localBack(device); };
+	// Devices where Windows Daily Toolkit handed the deck to this plugin. If the user opened these keys some other way
+	// (picked the profile in Stream Deck, a native Switch Profile key…), Back must not wait for the Toolkit: it simply
+	// returns to the previous profile.
+	const viaToolkit = new Set<string>();
+	const back = async (device: string) => {
+		if (bridge?.connected && viaToolkit.has(device)) { try { await bridge.request("back", device); return; } catch { /* fall back below */ } }
+		viaToolkit.delete(device);
+		await localBack(device);
+	};
 	for (const definition of config.commands) {
 		PRESET_ICONS["comp-" + definition.id] = { glyph: definition.glyph, theme: definition.theme, label: definition.name, style: config.design ? "app" : "vivid" };
 		@action({ UUID: config.uuid + "." + definition.id })
@@ -45,13 +76,35 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 			#busy = new Set<string>();
 			#pending = new Map<string, ReturnType<typeof setTimeout>>();
 			#release(id: string): void { this.#held.delete(id); clearTimeout(this.#pending.get(id)); this.#pending.delete(id); }
-			override onWillDisappear(ev: WillDisappearEvent<KeySettings>): void { this.#release(ev.action.id); super.onWillDisappear(ev); }
+			override onWillDisappear(ev: WillDisappearEvent<KeySettings>): void { this.#release(ev.action.id); meterKeys.delete(ev.action.id); watchMeters(); super.onWillDisappear(ev); }
+			override async onWillAppear(ev: WillAppearEvent<KeySettings>): Promise<void> {
+				await super.onWillAppear(ev);
+				const m = definition.meter;
+				if (m) {
+					meterKeys.set(ev.action.id, { source: m.source, repaint: async () => this.paint(ev.action, await ev.action.getSettings()) });
+					watchMeters();
+					if (!readings.has(m.source) || Date.now() - readings.get(m.source)!.at > 30_000) void refreshUsage(m.source);
+				}
+			}
+			override imageNow(s: KeySettings): { image: string } {
+				const m = definition.meter;
+				if (!m || (typeof s.iconImage === "string" && s.iconImage.startsWith("data:image/"))) return super.imageNow(s);
+				const look = this.look(s), motion = this.motion(s), r = readings.get(m.source), w = r?.ok ? r.windows[m.window] : undefined;
+				const style = look.style === "real" ? "app" : look.style;
+				return { image: svgDataUri(meterKeySvg({ brand: (config.design?.id as string) || "claude", style, colours: (THEMES as Record<string, string[]>)[look.theme], pct: w?.pct, caption: m.window === "5h" ? "5-HOUR" : "WEEKLY", until: w ? untilText(w.resetsAt) : "", state: !r ? "loading" : r.ok ? (w ? "ok" : "nodata") : r.reason, label: look.label, phase: motion?.phase ?? 0, animate: !!motion })) };
+			}
 			override async onKeyUp(ev: KeyUpEvent<KeySettings>): Promise<void> { this.#release(ev.action.id); }
 			protected override dynamicLabel(settings: KeySettings): string | undefined {
 				return ((definition.trading === "submit" || definition.requiresBinding) && !settings.shortcut?.trim()) || (definition.operation === "url" && !definition.url && !settings.destination?.trim()) ? definition.name + " · SETUP" : undefined;
 			}
 			override async onKeyDown(ev: KeyDownEvent<KeySettings>): Promise<void> {
 				try {
+					if (definition.meter) {
+						await refreshUsage(definition.meter.source);
+						const r = readings.get(definition.meter.source);
+						if (r && !r.ok) await this.feedback(ev.action, { status: "miss", message: r.message }); else await ev.action.showOk();
+						return;
+					}
 					if (definition.operation === "back") { await back(ev.action.device.id); return; }
 					if (definition.operation === "page") { await streamDeck.profiles.switchToProfile(ev.action.device.id, config.profile, definition.page || 0); return; }
 					if (definition.operation === "applink") {
@@ -121,6 +174,22 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 	streamDeck.settings.onDidReceiveGlobalSettings((ev) => { Object.assign(globals, ev.settings); bridge?.update(); });
 	streamDeck.ui.onSendToPlugin<{ event?: string; settings?: KeySettings }>(async (ev) => {
 		if (streamDeck.ui.action?.id !== ev.action.id) return;
+		if (ev.payload?.event === "meterSaveKey" || ev.payload?.event === "meterClearKey") {
+			const value = (ev.payload as { value?: string }).value?.trim();
+			let message = "Session key removed.";
+			if (ev.payload.event === "meterSaveKey") {
+				if (!value || value.length > 4096) { await streamDeck.ui.sendToPropertyInspector({ event: "meterStatus", message: "That doesn't look like a session key." }); return; }
+				const r = await ps.run("secret-protect", [value, "claude-usage"]);
+				if (r.status !== "ok") { await streamDeck.ui.sendToPropertyInspector({ event: "meterStatus", message: "The key could not be encrypted on this PC." }); return; }
+				globals.claudeUsageKey = r.message; message = "Saved (encrypted). Reading usage…";
+			} else delete globals.claudeUsageKey;
+			await streamDeck.settings.setGlobalSettings({ ...globals } as never);
+			await streamDeck.ui.sendToPropertyInspector({ event: "meterStatus", message });
+			await refreshUsage("claude");
+			const r = readings.get("claude");
+			if (ev.payload.event === "meterSaveKey") await streamDeck.ui.sendToPropertyInspector({ event: "meterStatus", message: r?.ok ? "Connected. Usage updates every minute." : r?.message || "" });
+			return;
+		}
 		if (ev.payload?.event === "companionShow") { await show(ev.action.device.id); return; }
 		if (ev.payload?.event === "companionBack") { await back(ev.action.device.id); return; }
 		if (ev.payload?.event === "getIcon" || ev.payload?.event === "refreshIcon") {
@@ -132,7 +201,7 @@ export async function bootCompanion(config: CompanionConfig): Promise<void> {
 	});
 	await streamDeck.connect();
 	try { Object.assign(globals, await streamDeck.settings.getGlobalSettings()); } catch { log.warn("Using default focus settings"); }
-	bridge = connectCompanion({ uuid: config.uuid, enabled: () => globals.autoFollow !== false, invoke: (command, device) => command === "show" ? localShow(device) : localBack(device) });
+	bridge = connectCompanion({ uuid: config.uuid, enabled: () => globals.autoFollow !== false, invoke: async (command, device) => { if (command === "show") { await localShow(device); viaToolkit.add(device); } else { viaToolkit.delete(device); await localBack(device); } } });
 	for (const [device, count] of visible) bridge.setVisible(device, count > 0);
 
 // A fresh receipt lets the installer verify this connected SDK process without reading settings.

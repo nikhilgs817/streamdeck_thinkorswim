@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+- **Back** now returns to your previous profile even when these keys were opened directly in Stream Deck (not through Windows Daily Toolkit).
+- Shared runtime and artwork updates.
+
 ## 1.2.0
 
 - **New look:** thinkorswim Dark (default) with black terminal keys, teal accent, bold Segoe UI labels and an animated icon for every key; Buy green and Sell red in every style. thinkorswim Light, Colourful, Vivid and Pro share the icons.

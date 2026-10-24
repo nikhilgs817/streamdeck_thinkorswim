@@ -589,3 +589,38 @@ export function brandMonoSvg(glyph, size) {
 export const claudeMonoSvg = brandMonoSvg;
 export const hasArt = (glyph) => Object.prototype.hasOwnProperty.call(ART, glyph);
 export const hasClaudeArt = hasArt;
+
+/**
+ * Usage meter key: big percentage inside a ring that fills with the used share of the window.
+ * state: "ok" | "setup" | "signin" | "blocked" | "nodata" | "error" | "loading".
+ */
+export function meterKeySvg({ brand = "claude", style = "app", colours, pct, caption = "5-HOUR", until = "", state = "ok", label = "", phase = 0, animate = true }) {
+	const p = animate ? ((phase % 1) + 1) % 1 : 0, p2 = (p * 2) % 1;
+	const pal = palette(style, colours, brand);
+	const u = "mt" + (++uid).toString(36);
+	const ok = state === "ok" && typeof pct === "number";
+	const v = ok ? Math.max(0, Math.min(100, pct)) : 0;
+	const col = !ok ? pal.muted : v >= 85 ? "#FF4D5E" : v >= 60 ? "#F5A524" : pal.clay;
+	const R = 38, C = 2 * Math.PI * R, cx = 72, cy = 56;
+	const msg = { setup: "SETUP", signin: "SIGN IN", blocked: "BLOCKED", nodata: "NO DATA", error: "ERROR", loading: "…" }[state] || "";
+	const text = esc(String(label).slice(0, 14));
+	const fs = text.length > 11 ? 16.5 : text.length > 8 ? 18.5 : 21;
+	const glow = animate ? 0.12 + 0.2 * wave(p2) : 0.12;
+	let body = `<defs><linearGradient id="${u}b" x1="0" y1="0" x2="${style === "vivid" ? 1 : 0}" y2="1"><stop offset="0" stop-color="${pal.bgTop}"/><stop offset="1" stop-color="${pal.bgBottom}"/></linearGradient>` +
+		`<radialGradient id="${u}g" cx=".5" cy=".4" r=".55"><stop offset="0" stop-color="${col}" stop-opacity="${f(glow)}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient></defs>` +
+		`<rect width="144" height="144" fill="url(#${u}b)"/><rect width="144" height="144" fill="url(#${u}g)"/>` +
+		`<rect x="1.5" y="1.5" width="141" height="141" rx="14" fill="none" stroke="${pal.edge}" stroke-width="2"/>`;
+	if (pal.bar) body += `<rect width="144" height="6" fill="${pal.bar[0]}"/>`;
+	body += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${pal.faint}" stroke-width="9"/>`;
+	if (ok && v > 0) body += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${f(C * v / 100)} ${f(C)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+	// A bright dot travels round the ring so the key always looks alive.
+	if (animate) { const a = p * 2 * Math.PI - Math.PI / 2; body += `<circle cx="${f(cx + R * Math.cos(a))}" cy="${f(cy + R * Math.sin(a))}" r="3.2" fill="${pal.ink}" opacity=".85"/>`; }
+	body += `<text x="${cx}" y="${ok ? 58 : 58}" text-anchor="middle" font-family="${LABEL_FONT}" font-size="${ok ? (v >= 100 ? 26 : 30) : 15}" font-weight="800" fill="${ok ? pal.ink : col}" stroke="${ok ? pal.ink : col}" stroke-width=".5">${ok ? Math.round(v) + "%" : msg}</text>`;
+	body += `<text x="${cx}" y="76" text-anchor="middle" font-family="${LABEL_FONT}" font-size="11" font-weight="700" letter-spacing="1" fill="${pal.muted}">${esc(ok && until ? until : caption)}</text>`;
+	if (text) body += `<path d="M60 110h24" stroke="${col}" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>` +
+		`<text x="72" y="132" text-anchor="middle" font-family="${LABEL_FONT}" font-size="${fs}" font-weight="800" fill="${style === "neon" ? "#ffffff" : pal.ink}" stroke="${style === "neon" ? "#ffffff" : pal.ink}" stroke-width=".55" stroke-linejoin="round">${text}</text>`;
+	Object.assign(T, CLAUDE_TOKENS);
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144"><g data-app-design="${esc(brand)}" data-meter="${esc(state)}">${body}</g></svg>`;
+}
+
+ART.meter = (p) => `<circle cx="72" cy="56" r="34" fill="none" stroke="${T.faint}" stroke-width="8"/><circle cx="72" cy="56" r="34" fill="none" stroke="${T.clay}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${f(214 * (0.3 + 0.4 * wave(p)))} 214" transform="rotate(-90 72 56)"/><text x="72" y="64" text-anchor="middle" font-family="Segoe UI, Arial" font-size="22" font-weight="800" fill="${T.ink}">%</text>`;

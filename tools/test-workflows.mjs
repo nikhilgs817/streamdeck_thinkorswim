@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {readFileSync,existsSync,mkdtempSync} from 'node:fs';
+import {readFileSync,existsSync,mkdtempSync,mkdirSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {WebSocketServer} from 'ws';
@@ -10,6 +10,9 @@ import {keySvg,THEMES,setAppDesign} from '../shared/icons.js';
 const config=JSON.parse(readFileSync('companion.config.json'));setAppDesign(config.design);
 const sd=join(process.cwd(),'plugins',config.id,config.uuid+'.sdPlugin');
 const manifest=JSON.parse(readFileSync(join(sd,'manifest.json'))),temp=mkdtempSync(join(tmpdir(),'companion-test-')),log=join(temp,'commands.jsonl');
+// Fake Codex usage log: 5-hour window 42 % used, weekly 17 %.
+const codexHome=join(temp,'codex');mkdirSync(join(codexHome,'sessions','2026','10','24'),{recursive:true});
+writeFileSync(join(codexHome,'sessions','2026','10','24','rollout-test.jsonl'),JSON.stringify({type:'event_msg',payload:{type:'token_count',rate_limits:{primary:{used_percent:42,window_minutes:300,resets_at:Math.floor(Date.now()/1000)+3600},secondary:{used_percent:17,window_minutes:10080,resets_at:Math.floor(Date.now()/1000)+86400}}}})+'\n');
 const server=new WebSocketServer({port:0}),received=[],settings=new Map();let socket;
 server.on('connection',s=>{socket=s;s.on('message',raw=>{const m=JSON.parse(raw);received.push(m);if(m.event==='getGlobalSettings')s.send(JSON.stringify({event:'didReceiveGlobalSettings',payload:{settings:{}}}));if(m.event==='getSettings')s.send(JSON.stringify({event:'didReceiveSettings',action:config.uuid+'.'+m.context,context:m.context,device:'TEST',payload:{settings:settings.get(m.context)||{},controller:'Keypad'}}));});});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -17,7 +20,7 @@ const wait=async pred=>{for(let i=0;i<400;i++){if(pred())return;await sleep(20);
 const event=(name,c,s={})=>{const changed=JSON.stringify(settings.get(c.id))!==JSON.stringify(s);settings.set(c.id,s);const message={event:name,action:config.uuid+'.'+c.id,context:c.id,device:'TEST',payload:{settings:s,coordinates:{column:0,row:0},controller:'Keypad',isInMultiAction:false,state:0}};if(name==='keyDown'&&changed)socket.send(JSON.stringify({...message,event:'didReceiveSettings'}));socket.send(JSON.stringify(message));};
 const press=(c,s={})=>{event('keyDown',c,s);event('keyUp',c,s);};
 const info={application:{font:'Segoe UI',language:'en',platform:'windows',platformVersion:'10.0.22631',version:'7.6.0.0'},colors:{},devicePixelRatio:2,devices:[{id:'TEST',name:'Stream Deck',size:{columns:5,rows:3},type:0}],plugin:{uuid:config.uuid,version:config.version}};
-const proc=spawn(process.execPath,[join(sd,'bin/plugin.js'),'-port',String(server.address().port),'-pluginUUID',config.uuid,'-registerEvent','registerPlugin','-info',JSON.stringify(info)],{cwd:sd,env:{...process.env,DAILYOPS_DRYRUN:'1',DAILYOPS_DRYRUN_LOG:log,DAILYOPS_COMPANION_PIPE:process.platform==='win32'?'\\\\.\\pipe\\companion-test-'+process.pid:join(temp,'test.sock')},stdio:['ignore','pipe','pipe']});
+const proc=spawn(process.execPath,[join(sd,'bin/plugin.js'),'-port',String(server.address().port),'-pluginUUID',config.uuid,'-registerEvent','registerPlugin','-info',JSON.stringify(info)],{cwd:sd,env:{...process.env,DAILYOPS_CODEX_HOME:codexHome,DAILYOPS_DRYRUN:'1',DAILYOPS_DRYRUN_LOG:log,DAILYOPS_COMPANION_PIPE:process.platform==='win32'?'\\\\.\\pipe\\companion-test-'+process.pid:join(temp,'test.sock')},stdio:['ignore','pipe','pipe']});
 let output='';proc.stdout.on('data',d=>output+=d);proc.stderr.on('data',d=>output+=d);
 const commands=()=>existsSync(log)?readFileSync(log,'utf8').trim().split('\n').filter(Boolean).map(JSON.parse):[];
 let count=0;const check=(name,condition)=>{assert.ok(condition,name);console.log('PASS '+name);count++;};
@@ -30,6 +33,14 @@ try{
  for(const c of config.commands)event('willAppear',c);
  await wait(()=>received.filter(m=>m.event==='setImage').length>=config.commands.length*2);
  for(const c of config.commands){
+  if(c.meter){
+   const img=()=>decodeURIComponent(received.filter(m=>m.event==='setImage'&&m.context===c.id).at(-1)?.payload.image||'');
+   await wait(()=>/data-meter="(ok|setup|nodata|signin|blocked|error)"/.test(img()));
+   if(c.meter.source==='codex'){check(c.id+' shows the Codex '+c.meter.window+' percentage',img().includes(c.meter.window==='5h'?'42%':'17%'));}
+   else check(c.id+' asks for setup without a session key',img().includes('data-meter="setup"'));
+   check(c.id+' never logs or sends a key in dry-run',!commands().some(x=>JSON.stringify(x).includes('sessionKey')));
+   continue;
+  }
   const imgs=received.filter(m=>m.event==='setImage'&&m.context===c.id).map(m=>m.payload.image);
   check(c.id+' animates in the app theme',imgs.length>=2&&new Set(imgs).size>1);
   const needsBinding=c.requiresBinding||c.trading==='submit'||(!c.operation&&!c.menu&&!c.shortcut);

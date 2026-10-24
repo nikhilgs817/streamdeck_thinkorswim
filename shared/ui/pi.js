@@ -246,6 +246,7 @@
 
 	function onPluginMessage(p) {
 		if (p.event === "credentials") { receiveCredentials(p); return; }
+		if (p.event === "meterStatus") { const el = $("companionMeterStatus"); if (el) el.textContent = p.message || ""; return; }
 		if (p.event === "autofillResult" && kind === "app") { credentialStatus(p.message || "Autofill finished.", !p.ok); return; }
 		if (p.event === "screens") {
 			screenList = Array.isArray(p.list) ? p.list : [];
@@ -326,6 +327,17 @@
 			$("companionBack").hidden = definition.id !== "back";
 			$("companionFollowRow").hidden = definition.id !== "back";
 			$("companionFollow").addEventListener("change", () => { globalSettings.autoFollow = $("companionFollow").checked; if (ws && ws.readyState === 1) ws.send(JSON.stringify({event:"setGlobalSettings",context:piUuid,payload:globalSettings})); });
+			const meter = definition.meter;
+			$("companionMeterRow").hidden = !(meter && meter.source === "claude");
+			if (meter) { $("companionShortcutRow").hidden = true; $("companionShortcutHint").hidden = true; }
+			$("companionMeterSave").addEventListener("click", () => {
+				const v = $("companionMeterKey").value.trim();
+				$("companionMeterKey").value = "";
+				if (!v) { $("companionMeterStatus").textContent = "Paste the sessionKey value first."; return; }
+				$("companionMeterStatus").textContent = "Saving…";
+				sendToPlugin({ event: "meterSaveKey", value: v });
+			});
+			$("companionMeterClear").addEventListener("click", () => { $("companionMeterStatus").textContent = "Removing…"; sendToPlugin({ event: "meterClearKey" }); });
 			$("companionShow").addEventListener("click", () => sendToPlugin({event:"companionShow"}));
 			$("companionBack").addEventListener("click", () => sendToPlugin({event:"companionBack"}));
 			let shortcutTimer;

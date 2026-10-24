@@ -263,6 +263,12 @@
 		<div id="companionExecution" class="hint pad" hidden></div>
 		<div id="companionSetup" class="hint pad" hidden></div>
 		<div class="row" id="companionDestinationRow" hidden><label for="companionDestination">Page URL</label><input id="companionDestination" class="grow" placeholder="https://" /></div>
+		<div id="companionMeterRow" hidden>
+			<div class="row"><label for="companionMeterKey">Session key</label><input id="companionMeterKey" class="grow" type="password" autocomplete="off" placeholder="sk-ant-sid…" /></div>
+			<div class="row"><label></label><button id="companionMeterSave" type="button">Save key</button><button id="companionMeterClear" type="button">Remove key</button></div>
+			<div id="companionMeterHint" class="hint pad">From claude.ai in your browser: F12 › Application › Cookies › claude.ai › <b>sessionKey</b>. It is encrypted for this Windows account, shared by both Claude usage keys, and only sent to claude.ai.</div>
+			<div id="companionMeterStatus" class="hint pad"></div>
+		</div>
 		<div class="row" id="companionShortcutRow"><label for="companionShortcut">Shortcut</label><input id="companionShortcut" class="grow" placeholder="Use the built-in control" /></div>
 		<div id="companionShortcutHint" class="hint pad">Optional override, for example Ctrl+Shift+N. Match the shortcut configured in your app.</div>
 		<div class="row" id="companionFollowRow" hidden><label for="companionFollow">Follow focus</label><div class="grow"><input id="companionFollow" type="checkbox" checked /> <span class="hint">Automatically show these keys when this app is in front. Requires Windows Daily Toolkit 2.6 or later.</span></div></div>

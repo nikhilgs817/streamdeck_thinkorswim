@@ -25,7 +25,7 @@
 		const chosen = [settings.appName, settings.appId, settings.target].filter(Boolean).join(" ");
 		if (chosen) {
 			if (VSCODE_RE.test(chosen)) return "VS Code";
-			for (const [pattern, name] of [[/chatgpt|OpenAI\.(ChatGPT|Codex)/i, "ChatGPT"], [/\bclaude\b/i, "Claude"], [/thinkorswim/i, "thinkorswim"], [/Fidelity Trader\+|68D72461-B3DB-4FE2-AE47-50EF0FD7254F/i, "Fidelity Trader+"]]) if (pattern.test(chosen)) return name;
+			for (const [pattern, name] of [[/chatgpt|OpenAI\.(ChatGPT|Codex)/i, "ChatGPT"], [/\bclaude\b/i, "Claude"], [/thinkorswim/i, "thinkorswim"], [/tradingview/i, "TradingView"], [/Fidelity Trader\+|68D72461-B3DB-4FE2-AE47-50EF0FD7254F/i, "Fidelity Trader+"]]) if (pattern.test(chosen)) return name;
 		}
 		return "";
 	}
@@ -88,6 +88,7 @@
 				fill();
 			} else if (m.event === "didReceiveGlobalSettings" && m.payload) {
 				globalSettings = m.payload.settings || {};
+				{ const el = $("companionMeterSaved"); if (el) { const at = globalSettings.claudeUsageKeySavedAt ? new Date(globalSettings.claudeUsageKeySavedAt) : null; el.textContent = globalSettings.claudeUsageKey ? "Session key saved" + (at && !isNaN(at) ? " on " + at.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "") + ". If the key shows SIGN IN, press it to open claude.ai and paste a new one." : "No session key saved yet. Press the key to open claude.ai, then paste the sessionKey here."; } }
 				$("monitorOrder").value = globalSettings.monitorOrder === "left" || globalSettings.monitorOrder === "primary" ? globalSettings.monitorOrder : "windows";
 				$("autoFollow").checked = globalSettings.autoFollow !== false;
 				$("companionFollow").checked = globalSettings.autoFollow !== false;
@@ -322,7 +323,7 @@
 			$("companionDestinationRow").hidden = definition.operation !== "url";
 			$("companionDestination").placeholder = definition.url || "Enter your trading desk page URL";
 			$("companionDestination").addEventListener("change", () => { set("destination", $("companionDestination").value.trim()); save(); });
-			$("companionShortcut").placeholder = definition.trading === "submit" ? "Enter the matching broker hotkey" : definition.shortcut || "Use the built-in control";
+			$("companionShortcut").placeholder = definition.trading === "submit" ? (definition.suggest ? "Type " + definition.suggest + " (app default)" : "Enter the matching broker hotkey") : definition.shortcut || "Use the built-in control";
 			if (definition.trading) $("companionShortcutHint").textContent = definition.trading === "submit" ? "Required: one configured trading hotkey, e.g. Ctrl+Alt+B or F8. Broker settings determine whether it submits. The trading app must already be in front." : "Optional app hotkey override. Bracket shortcuts must open an editor; panel shortcuts must open the named panel. One chord only.";
 			$("companionBack").hidden = definition.id !== "back";
 			$("companionFollowRow").hidden = definition.id !== "back";

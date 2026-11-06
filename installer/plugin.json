@@ -1,15 +1,18 @@
 {
   "InstallerId": "ThinkorswimControls",
   "Name": "thinkorswim Controls",
-  "PluginId": "com.dailyops.thinkorswim.v1",
+  "PluginId": "com.windowstoolkit.thinkorswim",
   "PluginFolder": "thinkorswim",
   "Profile": "profiles/thinkorswim",
-  "Version": "1.2.2.0",
+  "Version": "2.0.0.0",
   "Repository": "nikhilgs817/streamdeck_thinkorswim",
   "Toolkit": {
-    "Version": "2.6.1.0",
-    "Url": "https://github.com/nikhilgs817/windows_daily_toolkit/releases/download/v2.6.1/WindowsDailyToolkit-Installer-2.6.1.0.zip",
-    "Sha256": "c2e1fd3e6e2671b16b7f4a70d54913596569164c5d89cf305e521d60310621c3"
+    "Version": "3.0.0.0",
+    "Url": "https://github.com/nikhilgs817/windows_toolkit/releases/download/v3.0.0/WindowsToolkit-Installer-3.0.0.0.zip",
+    "Sha256": "31506048f13823fdbff39b69dbfb66cb63952bb1a5ffb8c73b477a319b1df0b5"
   },
-  "PackageSha256": "27c86b83b6a8834f06e1444775fc4d08cd83e4ff01b232ff09c34e417ada64b5"
+  "PackageSha256": "341ab51288cdac94032fc84ebf6463405b14ef921549b84b815eee58fee73333",
+  "RetiredPluginIds": [
+    "com.dailyops.thinkorswim.v1"
+  ]
 }

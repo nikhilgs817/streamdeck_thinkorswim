@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 
 /** Plugin source folder → generated .sdPlugin directory. */
 export const PLUGINS = {
-	thinkorswim: "com.dailyops.thinkorswim.v1.sdPlugin",
+	thinkorswim: "com.windowstoolkit.thinkorswim.sdPlugin",
 };
 
 const only = process.env.PLUGIN;
@@ -34,7 +34,7 @@ for (const [name, sd] of Object.entries(PLUGINS)) {
 	if (existsSync(`${dir}/ui`)) {
 		configs.push({
 			input: "shared/icons.js",
-			output: { file: `${dir}/ui/icons.js`, format: "iife", name: "DailyOpsIcons" },
+			output: { file: `${dir}/ui/icons.js`, format: "iife", name: "WinToolkitIcons" },
 			plugins: [!watching && terser()],
 		});
 	}

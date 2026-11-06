@@ -424,9 +424,9 @@
       "trading": "panel"
     }
   ],
-  "uuid": "com.dailyops.thinkorswim.v1",
+  "uuid": "com.windowstoolkit.thinkorswim",
   "name": "thinkorswim Controls",
-  "version": "1.2.2.0",
+  "version": "2.0.0.0",
   "profile": "profiles/thinkorswim",
   "selector": {
     "names": [

@@ -1,6 +1,6 @@
 # thinkorswim Controls
 
-Unofficial Windows companion for Elgato Stream Deck. Version 1.2.2.0.
+Unofficial Windows companion for Elgato Stream Deck. Version 2.0.0.0.
 
 Three editable pages organize preparation, execution and position management. Stocks only: no options workflow is bundled.
 
@@ -20,11 +20,11 @@ The Custom shortcut and other non-trading keys send one shortcut and never Enter
 
 ## Install in three steps
 
-1. Download **ThinkorswimControls-Installer-1.2.2.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
+1. Download **ThinkorswimControls-Installer-2.0.0.0.zip** from [Releases](https://github.com/nikhilgs817/streamdeck_thinkorswim/releases/latest).
 2. Right-click the ZIP, choose **Extract All**, and open the extracted folder.
 3. Double-click **Install-ThinkorswimControls.cmd**. Wait for the installation success message; Stream Deck restarts automatically.
 
-No Git, Node.js or build commands are required. Windows Daily Toolkit is included for automatic app switching. The installer verifies files, backs up your setup, preserves existing layouts/settings and rolls back failed updates. [Full installation, update and recovery guide](docs/INSTALL.md).
+No Git, Node.js or build commands are required. Windows Toolkit is included for automatic app switching. The installer verifies files, backs up your setup, preserves existing layouts/settings and rolls back failed updates. [Full installation, update and recovery guide](docs/INSTALL.md).
 
 ## Use
 
@@ -50,7 +50,7 @@ npm run build:installer
 npm run test:installer
 ```
 
-Installer: `dist/com.dailyops.thinkorswim.v1.streamDeckPlugin`. Sources and dependencies are self-contained. Personal profiles, credentials, account data and build output are excluded from Git.
+Installer: `dist/com.windowstoolkit.thinkorswim.streamDeckPlugin`. Sources and dependencies are self-contained. Personal profiles, credentials, account data and build output are excluded from Git.
 
 ![Settings](docs/images/settings.png)
 
@@ -58,7 +58,7 @@ Installer: `dist/com.dailyops.thinkorswim.v1.streamDeckPlugin`. Sources and depe
 
 - [Official app documentation 1](https://toslc.thinkorswim.com/center/howToTos/thinkManual/Getting-Started/Keyboard-Shortcuts)
 - [Official app documentation 2](https://toslc.thinkorswim.com/center/howToTos/thinkManual/Trade/Active-Trader/AT-Entering-Orders)
-- [Windows Daily Toolkit](https://github.com/nikhilgs817/windows_daily_toolkit)
+- [Windows Toolkit](https://github.com/nikhilgs817/windows_toolkit)
 
 ## Trading risk
 

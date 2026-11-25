@@ -426,7 +426,7 @@
   ],
   "uuid": "com.windowstoolkit.thinkorswim",
   "name": "thinkorswim Controls",
-  "version": "2.0.0.0",
+  "version": "2.1.0.0",
   "profile": "profiles/thinkorswim",
   "selector": {
     "names": [
